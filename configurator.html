@@ -333,39 +333,6 @@
       margin-top: 0.75rem;
     }
 
-    #dialog {
-      border: none;
-      border-radius: 12px;
-      padding: 1.5rem;
-      max-width: 420px;
-      width: calc(100% - 3rem);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
-      background: white;
-    }
-
-    #dialog::backdrop {
-      background: rgba(15, 23, 42, 0.35);
-    }
-
-    #dialog h3 {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    #dialog p {
-      margin: 0.75rem 0 0;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    .dialog-actions {
-      display: flex;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1.25rem;
-    }
-
     #summary-wrapper {
       display: flex;
       flex-direction: column;
@@ -571,7 +538,6 @@
     const infoContent = document.getElementById('info-section');
     const autoContent = document.getElementById('auto-section');
     const totalsContent = document.getElementById('totals-content');
-    const dialogEl = document.getElementById('dialog');
 
     window.addEventListener('DOMContentLoaded', () => {
       loadData();
@@ -599,7 +565,9 @@
      */
     function updateStatus(message) {
       statusEl.textContent = message;
-      renderWarnings();
+      if (state.warnings.length) {
+        renderWarnings();
+      }
     }
 
     /**
@@ -610,10 +578,9 @@
       const cleaned = stripHtmlToJson(text);
       try {
         const parsed = JSON.parse(cleaned);
-        const normalized = normalizeProjectData(parsed);
-        const { warnings, valid } = validateData(normalized);
-        state.rawData = normalized;
-        state.data = valid ? normalized : null;
+        const { warnings, valid } = validateData(parsed);
+        state.rawData = parsed;
+        state.data = valid ? parsed : null;
         state.warnings = warnings;
         if (!valid) {
           filtersContent.innerHTML = '<p>Структура данных не полна, проверьте предупреждения.</p>';
@@ -1551,7 +1518,7 @@
      * Добавляет или убирает опцию, учитывая ограничения и зависимости.
      * @param {string} optionId
      */
-    async function toggleOption(optionId) {
+    function toggleOption(optionId) {
       if (!state.index) return;
       const opt = state.index.optionMap.get(optionId);
       if (!opt) return;
@@ -1562,7 +1529,7 @@
       } else {
         applyConstraint(opt);
         state.selection.add(optionId);
-        const ok = await ensureDependencies(opt, new Set([optionId]));
+        const ok = ensureDependencies(opt, new Set([optionId]));
         if (!ok) {
           state.conflicts.set(optionId, collectMissingDependencies(opt));
         } else {
@@ -1591,82 +1558,15 @@
     }
 
     /**
-     * Показывает модальное подтверждение, совместимое с клавиатурой.
-     * @param {{title?:string,message:string,confirmText?:string,cancelText?:string}} options
-     * @returns {Promise<boolean>}
-     */
-    function showConfirm({
-      title = 'Требуются зависимости',
-      message,
-      confirmText = 'Добавить',
-      cancelText = 'Оставить без изменений',
-    }) {
-      if (!dialogEl || typeof dialogEl.showModal !== 'function') {
-        return Promise.resolve(window.confirm(message));
-      }
-      return new Promise((resolve) => {
-        const previousActive = document.activeElement;
-        dialogEl.innerHTML = '';
-        const titleEl = document.createElement('h3');
-        titleEl.textContent = title;
-        const messageEl = document.createElement('p');
-        messageEl.textContent = message;
-        const actions = document.createElement('div');
-        actions.className = 'dialog-actions';
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'secondary-button';
-        cancelBtn.dataset.action = 'cancel';
-        cancelBtn.textContent = cancelText;
-        const confirmBtn = document.createElement('button');
-        confirmBtn.type = 'button';
-        confirmBtn.className = 'primary-button';
-        confirmBtn.dataset.action = 'confirm';
-        confirmBtn.textContent = confirmText;
-        actions.append(cancelBtn, confirmBtn);
-        dialogEl.append(titleEl, messageEl, actions);
-
-        const cleanup = (result) => {
-          dialogEl.close();
-          if (previousActive instanceof HTMLElement) {
-            previousActive.focus();
-          }
-          resolve(result);
-        };
-
-        const handleCancel = (event) => {
-          event.preventDefault();
-          cleanup(false);
-        };
-
-        dialogEl.addEventListener('cancel', handleCancel, { once: true });
-        cancelBtn.addEventListener('click', handleCancel, { once: true });
-        confirmBtn.addEventListener(
-          'click',
-          (event) => {
-            event.preventDefault();
-            cleanup(true);
-          },
-          { once: true },
-        );
-
-        dialogEl.showModal();
-        confirmBtn.focus();
-      });
-    }
-
-    /**
      * Обрабатывает зависимости опции.
      * @param {any} opt
      * @param {Set<string>} trail
      */
-    async function ensureDependencies(opt, trail) {
+    function ensureDependencies(opt, trail) {
       const missing = collectMissingDependencies(opt);
       if (!missing.length) return true;
       const names = missing.map((id) => state.index.optionMap.get(id)?.name || id).join(', ');
-      const confirmed = await showConfirm({
-        message: `Опция «${opt.name || opt.id}» требует: ${names}. Добавить автоматически?`,
-      });
+      const confirmed = window.confirm(`Опция «${opt.name || opt.id}» требует: ${names}. Добавить автоматически?`);
       if (!confirmed) return false;
       missing.forEach((depId) => {
         addOptionWithDependencies(depId, trail);
@@ -2045,71 +1945,24 @@
     }
 
     /**
-     * Готовит структуру проекта, поднимая ключи из metadata.
-     * @param {any} data
-     */
-    function normalizeProjectData(data) {
-      if (!data || typeof data !== 'object') return data;
-      const normalized = { ...data };
-      const meta = data.metadata && typeof data.metadata === 'object' ? data.metadata : null;
-      if (meta) {
-        if (meta.geometry && !normalized.geometry) {
-          normalized.geometry = meta.geometry;
-        }
-        if (meta.cost_models && !normalized.cost_models) {
-          normalized.cost_models = meta.cost_models;
-        }
-        if (typeof meta.overhead_pct === 'number' && normalized.overhead_pct == null) {
-          normalized.overhead_pct = meta.overhead_pct;
-        }
-        if (meta.notes && normalized.notes == null) {
-          normalized.notes = meta.notes;
-        }
-      }
-      return normalized;
-    }
-
-    /**
      * Удаляет HTML-обёртку, возвращая JSON-строку.
      * @param {string} text
      */
     function stripHtmlToJson(text) {
-      const trimmed = text.trim();
-      if (!trimmed.startsWith('<')) return text;
-
-      let extracted = trimmed;
-      if (typeof DOMParser !== 'undefined') {
-        try {
-          const doc = new DOMParser().parseFromString(trimmed, 'text/html');
-          extracted = doc?.body?.textContent ?? trimmed;
-        } catch (error) {
-          console.warn('DOMParser parsing failed, fallback to regex cleanup.', error);
-        }
-      }
-
-      if (extracted === trimmed) {
-        extracted = trimmed
-          .replace(/<style[\s\S]*?<\/style>/gi, '')
-          .replace(/<script[\s\S]*?<\/script>/gi, '')
-          .replace(/<[^>]+>/g, '\n');
-      }
-
-      return extracted
-        .replace(/\u00a0|&nbsp;|&#160;/g, ' ')
+      if (!text.trim().startsWith('<')) return text;
+      const noTags = text
+        .replace(/<[^>]+>/g, '\n')
         .replace(/&quot;/g, '"')
         .replace(/&amp;/g, '&')
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-        .replace(/\r/g, '')
+        .replace(/&nbsp;|&#160;/g, ' ');
+      const normalized = noTags
         .split('\n')
-        .map((line) => line.trimEnd())
-        .filter((line, index, array) => {
-          if (line.trim() === '') {
-            return index > 0 && array[index - 1].trim() !== '';
-          }
-          return true;
-        })
-        .join('\n')
+        .map((line) => line.replace(/\s+/g, (match) => (match.includes('  ') ? '  ' : ' ')))
+        .join('\n');
+      return normalized
+        .replace(/\n{2,}/g, '\n')
         .trim();
     }
 
@@ -2123,7 +1976,7 @@
         warnings.push('Данные не являются объектом.');
         return { valid: false, warnings };
       }
-      const requiredTop = ['geometry', 'cost_models', 'overhead_pct'];
+      const requiredTop = ['geometry', 'cost_models', 'overhead_pct', 'categories'];
       requiredTop.forEach((key) => {
         if (!(key in data)) warnings.push(`Отсутствует ключ ${key}.`);
       });
