@@ -61,10 +61,10 @@
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 300px minmax(0, 1.45fr) minmax(360px, 1fr);
-      gap: 1.25rem;
-      padding: 1.5rem 2.5rem 2.5rem;
-      width: min(1280px, 100%);
+      grid-template-columns: 320px minmax(0, 1.1fr) minmax(420px, 1fr);
+      gap: 1.5rem;
+      padding: 1.75rem 3rem 2.5rem;
+      width: min(1400px, 100%);
       margin: 0 auto;
       box-sizing: border-box;
     }
@@ -72,8 +72,8 @@
     .panel {
       background: var(--panel-gradient);
       border: 1px solid rgba(13, 110, 139, 0.12);
-      border-radius: 16px;
-      padding: 1.15rem;
+      border-radius: 18px;
+      padding: 1.25rem;
       box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
       display: flex;
       flex-direction: column;
@@ -95,7 +95,84 @@
     .scrollable {
       overflow: auto;
       flex: 1;
-      padding-right: 0.4rem;
+      padding-right: 0.6rem;
+    }
+
+    .geometry-card {
+      border: 1px solid rgba(13, 110, 139, 0.2);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.88);
+      padding: 0.85rem 0.95rem 1rem;
+      margin-bottom: 1.25rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .geometry-card h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .geometry-description {
+      font-size: 0.85rem;
+      color: #53616f;
+      line-height: 1.4;
+    }
+
+    .geometry-fields {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .geometry-field {
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .geometry-field label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #0b7285;
+    }
+
+    .geometry-field input {
+      border-radius: 10px;
+      border: 1px solid rgba(13, 110, 139, 0.35);
+      padding: 0.45rem 0.65rem;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .geometry-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .geometry-actions button {
+      border-radius: 10px;
+      border: 1px solid rgba(11, 114, 133, 0.6);
+      padding: 0.45rem 0.9rem;
+      background: rgba(224, 247, 250, 0.8);
+      color: #0b7285;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .geometry-actions button:hover {
+      background: rgba(198, 244, 250, 0.95);
+    }
+
+    .geometry-note {
+      font-size: 0.78rem;
+      color: #6b7280;
+      line-height: 1.4;
+      flex: 1;
+      min-width: 160px;
     }
 
     .search-input {
@@ -136,6 +213,8 @@
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
       font-size: 0.85rem;
+      color: #0b7285;
+      font-weight: 600;
     }
 
     .filter-list button:hover {
@@ -235,19 +314,44 @@
 
     .option-card header {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 0.5rem;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
     .option-card h3 {
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.05rem;
     }
 
     .option-meta {
+      display: grid;
+      gap: 0.3rem;
       font-size: 0.85rem;
+      color: #475569;
+    }
+
+    .option-meta strong {
+      font-weight: 600;
+      color: #0b7285;
+    }
+
+    .option-meta .scale-hint {
       color: #6b7280;
+      font-size: 0.8rem;
+    }
+
+    .option-meta .option-basis {
+      color: #0c4a6e;
+      font-weight: 500;
+    }
+
+    .option-meta .option-quantity-value {
+      font-weight: 600;
+      color: #0b7285;
+    }
+
+    .option-meta .option-quantity-value.quantity-changed {
+      color: #d9480f;
     }
 
     .option-description {
@@ -262,12 +366,14 @@
     }
 
     .badge {
-      background: linear-gradient(135deg, rgba(11, 114, 133, 0.12) 0%, rgba(16, 152, 173, 0.18) 100%);
-      color: var(--accent);
+      background: linear-gradient(135deg, rgba(11, 114, 133, 0.18) 0%, rgba(16, 152, 173, 0.28) 100%);
+      color: white;
       border-radius: 999px;
       padding: 0.25rem 0.65rem;
       font-size: 0.74rem;
       font-weight: 600;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
     }
 
     .completeness-warning {
@@ -515,30 +621,71 @@
     }
 
     .cart-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      border-radius: 10px;
-      padding: 0.45rem 0.55rem;
+      display: grid;
+      gap: 0.4rem;
+      border-radius: 12px;
+      padding: 0.55rem 0.65rem 0.6rem;
       background: rgba(240, 249, 252, 0.9);
       border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .cart-item-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
     }
 
     .cart-item-name {
       font-weight: 600;
       font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .cart-remove {
+      border: none;
+      background: transparent;
+      color: #c92a2a;
+      font-size: 1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.1rem;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .cart-remove:hover,
+    .cart-remove:focus-visible {
+      background: rgba(201, 42, 42, 0.12);
     }
 
     .cart-item-amount {
       font-size: 0.82rem;
       color: #334155;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+
+    .cart-item-amount strong {
+      font-size: 0.88rem;
+      color: #0c4a6e;
     }
 
     .cart-item-amount small {
-      display: block;
       color: #6b7280;
       font-size: 0.75rem;
-      margin-top: 0.1rem;
+    }
+
+    .cart-item-quantity {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .cart-item-quantity.quantity-changed {
+      color: #d9480f;
+      font-weight: 600;
     }
 
     .conflict-block {
@@ -581,7 +728,7 @@
 
     .info-item strong {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #0b7285;
     }
 
@@ -605,6 +752,32 @@
     .info-meta {
       font-size: 0.85rem;
       color: #475569;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.4rem;
+      font-size: 0.78rem;
+    }
+
+    .range-row span {
+      display: block;
+      background: rgba(15, 118, 110, 0.08);
+      border-radius: 8px;
+      padding: 0.35rem 0.45rem;
+      text-align: center;
+    }
+
+    .range-row span strong {
+      display: block;
+      color: #0c4a6e;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     #totals-footer {
@@ -752,6 +925,16 @@
 
     const STORAGE_KEY = 'house-configurator-v1';
 
+    const GEOMETRY_FIELDS = [
+      { key: 'floor_area_m2', label: 'Площадь пола, м²', min: 5, step: 0.1 },
+      { key: 'roof_area_m2', label: 'Площадь кровли, м²', min: 5, step: 0.1 },
+      { key: 'ext_walls_area_m2', label: 'Площадь наружных стен, м²', min: 5, step: 0.1 },
+      { key: 'int_partitions_area_m2', label: 'Площадь внутренних перегородок, м²', min: 0, step: 0.1 },
+      { key: 'openings_area_m2', label: 'Площадь проёмов, м²', min: 0, step: 0.1 },
+      { key: 'toilet_ceiling_area_m2', label: 'Потолок санузла, м²', min: 0, step: 0.05 },
+      { key: 'mezzanine_top_area_m2', label: 'Площадь антресоли, м²', min: 0, step: 0.05 },
+    ];
+
     const state = {
       rawData: null,
       data: null,
@@ -772,6 +955,8 @@
         includeOverhead: false,
       },
       autoResults: [],
+      baseGeometry: {},
+      geometry: {},
     };
 
     const statusEl = document.getElementById('status');
@@ -824,6 +1009,8 @@
         const { warnings, valid } = validateData(normalized);
         state.rawData = normalized;
         state.data = valid ? normalized : null;
+        state.baseGeometry = extractGeometry(normalized.geometry);
+        state.geometry = { ...state.baseGeometry };
         state.warnings = warnings;
         if (!valid) {
           filtersContent.innerHTML = '<p>Структура данных не полна, проверьте предупреждения.</p>';
@@ -864,6 +1051,105 @@
       renderFilters();
       renderCategoriesSkeleton();
       renderSummary();
+    }
+
+    /**
+     * Создаёт карточку управления геометрией.
+     */
+    function renderGeometryControls() {
+      const keys = state.baseGeometry ? Object.keys(state.baseGeometry) : [];
+      if (!keys.length) return null;
+      const card = document.createElement('section');
+      card.className = 'geometry-card';
+
+      const title = document.createElement('h3');
+      title.textContent = 'Параметры объекта';
+      card.append(title);
+
+      const description = document.createElement('p');
+      description.className = 'geometry-description';
+      description.textContent = 'Измените площади — конфигуратор автоматически пересчитает материалы, работы и накладные.';
+      card.append(description);
+
+      const fields = document.createElement('div');
+      fields.className = 'geometry-fields';
+
+      GEOMETRY_FIELDS.forEach((field) => {
+        if (typeof state.baseGeometry[field.key] !== 'number') return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'geometry-field';
+        const label = document.createElement('label');
+        label.htmlFor = `geometry-${field.key}`;
+        label.textContent = field.label;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = `geometry-${field.key}`;
+        if (field.min != null) input.min = String(field.min);
+        if (field.step != null) input.step = String(field.step);
+        input.value = formatNumber(state.geometry?.[field.key] ?? state.baseGeometry[field.key]);
+        input.addEventListener('input', (event) => {
+          if (!(event.target instanceof HTMLInputElement)) return;
+          handleGeometryInput(field.key, event.target);
+        });
+        wrapper.append(label, input);
+        fields.append(wrapper);
+      });
+
+      card.append(fields);
+
+      const actions = document.createElement('div');
+      actions.className = 'geometry-actions';
+      const resetBtn = document.createElement('button');
+      resetBtn.type = 'button';
+      resetBtn.textContent = 'Сбросить геометрию';
+      resetBtn.addEventListener('click', resetGeometry);
+      const note = document.createElement('span');
+      note.className = 'geometry-note';
+      note.textContent = 'Настройки сохраняются локально и применяются ко всем опциям.';
+      actions.append(resetBtn, note);
+      card.append(actions);
+
+      return card;
+    }
+
+    /**
+     * Обрабатывает изменение значения геометрии.
+     * @param {string} key
+     * @param {HTMLInputElement} input
+     */
+    function handleGeometryInput(key, input) {
+      if (!state.baseGeometry || typeof state.baseGeometry[key] !== 'number') return;
+      const raw = input.value;
+      if (raw === '') return;
+      const value = Number(raw);
+      const def = GEOMETRY_FIELDS.find((field) => field.key === key);
+      const min = def?.min ?? 0;
+      if (!Number.isFinite(value) || value < min) return;
+      if (!state.geometry) state.geometry = { ...state.baseGeometry };
+      state.geometry[key] = value;
+      input.value = formatNumber(value);
+      geometryUpdated();
+    }
+
+    /**
+     * Сбрасывает геометрию к исходным значениям.
+     */
+    function resetGeometry() {
+      state.geometry = { ...state.baseGeometry };
+      geometryUpdated();
+      renderFilters();
+    }
+
+    /**
+     * Сохраняет и пересчитывает состояние после обновления геометрии.
+     */
+    function geometryUpdated() {
+      persistState();
+      syncOptionCards();
+      renderSummary();
+      if (state.autoResults.length) {
+        runAutoAssembly();
+      }
     }
 
     /**
@@ -986,6 +1272,10 @@
       autoGroup.append(assembleBtn);
 
       filtersContent.innerHTML = '';
+      const geometryCard = renderGeometryControls();
+      if (geometryCard) {
+        filtersContent.append(geometryCard);
+      }
       filtersContent.append(search, modeGroup, roundingLabel, categoriesGroup, tagGroup, autoGroup);
 
       const laborToggle = laborLabel.querySelector('input');
@@ -1181,15 +1471,38 @@
           const item = document.createElement('li');
           item.className = 'cart-item';
 
+          const headerRow = document.createElement('div');
+          headerRow.className = 'cart-item-header';
+
           const name = document.createElement('span');
           name.className = 'cart-item-name';
           name.textContent = option.name || option.id;
 
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'cart-remove';
+          removeBtn.setAttribute('aria-label', `Удалить «${option.name || option.id}» из корзины`);
+          removeBtn.textContent = '×';
+          removeBtn.addEventListener('click', () => {
+            toggleOption(option.id);
+          });
+
+          headerRow.append(name, removeBtn);
+
+          const quantityLine = document.createElement('div');
+          quantityLine.className = 'cart-item-quantity';
+          quantityLine.textContent = `Количество: ${formatOptionQuantity(option)}`;
+          const baseQty = typeof option.quantity_for_project === 'number' ? option.quantity_for_project : null;
+          const currentQty = effectiveQuantity(option);
+          if (baseQty != null && currentQty != null && Math.abs(currentQty - baseQty) > 0.01) {
+            quantityLine.classList.add('quantity-changed');
+          }
+
           const amount = document.createElement('span');
           amount.className = 'cart-item-amount';
-          amount.innerHTML = `${formatCurrency(range.mid)}<small>min ${formatCurrency(range.min)} • max ${formatCurrency(range.max)}</small>`;
+          amount.innerHTML = `<strong>${formatCurrency(range.mid)}</strong><small>min ${formatCurrency(range.min)} • max ${formatCurrency(range.max)}</small>`;
 
-          item.append(name, amount);
+          item.append(headerRow, quantityLine, amount);
           list.append(item);
         });
 
@@ -1255,21 +1568,6 @@
       const stack = document.createElement('div');
       stack.className = 'info-list';
       infoContent.append(stack);
-
-      if (state.data?.geometry) {
-        const geo = document.createElement('div');
-        geo.className = 'info-item';
-        geo.innerHTML = '<strong>Геометрия объекта</strong>';
-        const list = document.createElement('ul');
-        Object.entries(state.data.geometry).forEach(([key, value]) => {
-          if (value && typeof value === 'object') return;
-          const li = document.createElement('li');
-          li.textContent = `${key}: ${typeof value === 'number' ? value.toFixed(2) : value}`;
-          list.append(li);
-        });
-        geo.append(list);
-        stack.append(geo);
-      }
 
       if (!options.length) {
         const hint = document.createElement('div');
@@ -1379,10 +1677,22 @@
         const block = document.createElement('div');
         block.className = 'info-item';
         const budgetLabel = formatCurrency(preset.budget);
-        block.innerHTML = `<strong>${preset.label}</strong> — бюджет до ${budgetLabel}`;
+        const heading = document.createElement('div');
+        heading.innerHTML = `<strong>${preset.label}</strong> — бюджет до ${budgetLabel}`;
+        block.append(heading);
+
         const summary = document.createElement('div');
         summary.className = 'info-meta';
-        summary.textContent = `Сумма: ${formatCurrency(preset.total.min)} / ${formatCurrency(preset.total.mid)} / ${formatCurrency(preset.total.max)} (${modeLabel(preset.mode)})`;
+        const modeLine = document.createElement('span');
+        modeLine.textContent = `Режим: ${modeLabel(preset.mode)}`;
+        const totals = document.createElement('div');
+        totals.className = 'range-row';
+        totals.innerHTML = `
+          <span><strong>min</strong>${formatCurrency(preset.total.min)}</span>
+          <span><strong>mid</strong>${formatCurrency(preset.total.mid)}</span>
+          <span><strong>max</strong>${formatCurrency(preset.total.max)}</span>
+        `;
+        summary.append(modeLine, totals);
         block.append(summary);
 
         if (preset.options.length) {
@@ -1684,6 +1994,37 @@
     }
 
     /**
+     * Форматирует метрику площади/количества.
+     * @param {number|null|undefined} value
+     */
+    function formatMeasure(value) {
+      if (value == null || Number.isNaN(value)) return '—';
+      const abs = Math.abs(value);
+      const formatter = new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: abs >= 100 ? 0 : abs >= 10 ? 1 : 0,
+        maximumFractionDigits: abs >= 100 ? 0 : abs >= 10 ? 1 : 2,
+      });
+      return formatter.format(value);
+    }
+
+    /**
+     * Строка с количеством для проекта.
+     * @param {any} opt
+     */
+    function formatOptionQuantity(opt) {
+      const unit = opt.unit || '';
+      const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
+      const current = effectiveQuantity(opt);
+      const currentText = current != null ? formatMeasure(current) : base != null ? formatMeasure(base) : null;
+      if (!currentText) return unit || '—';
+      let text = `${currentText}${unit ? ` ${unit}` : ''}`.trim();
+      if (base != null && current != null && Math.abs(current - base) > 0.01) {
+        text += ` (базово: ${formatMeasure(base)}${unit ? ` ${unit}` : ''})`;
+      }
+      return text;
+    }
+
+    /**
      * Рендерит конкретную категорию, создавая карточки опций.
      * @param {any} cat
      * @param {HTMLElement} container
@@ -1719,10 +2060,36 @@
       title.textContent = opt.name || opt.id;
       const unitInfo = document.createElement('div');
       unitInfo.className = 'option-meta';
-      const quantity = typeof opt.quantity_for_project === 'number'
-        ? `${opt.quantity_for_project} ${opt.unit || ''}`.trim()
-        : opt.unit || '—';
-      unitInfo.textContent = `${quantity}${opt.how_to_scale ? ` · ${opt.how_to_scale}` : ''}`;
+
+      const quantityLine = document.createElement('div');
+      quantityLine.className = 'option-quantity';
+      const quantityLabel = document.createElement('strong');
+      quantityLabel.textContent = 'Количество:';
+      const quantityValue = document.createElement('span');
+      quantityValue.className = 'option-quantity-value';
+      quantityValue.textContent = formatOptionQuantity(opt);
+      quantityLine.append(quantityLabel, quantityValue);
+      unitInfo.append(quantityLine);
+
+      if (opt.price_unit_basis) {
+        const basis = document.createElement('div');
+        basis.className = 'option-basis';
+        basis.textContent = opt.price_unit_basis;
+        unitInfo.append(basis);
+      } else if (opt.unit) {
+        const unitLine = document.createElement('div');
+        unitLine.className = 'option-basis';
+        unitLine.textContent = `Ед. измерения: ${opt.unit}`;
+        unitInfo.append(unitLine);
+      }
+
+      if (opt.how_to_scale) {
+        const scale = document.createElement('div');
+        scale.className = 'scale-hint';
+        scale.textContent = opt.how_to_scale;
+        unitInfo.append(scale);
+      }
+
       header.append(title, unitInfo);
 
       const description = document.createElement('p');
@@ -1785,6 +2152,16 @@
           <div><strong>mid</strong>${formatCurrency(priceLine.mid)}</div>
           <div><strong>max</strong>${formatCurrency(priceLine.max)}</div>
         `;
+      }
+
+      const quantityValue = article.querySelector('.option-quantity-value');
+      if (quantityValue) {
+        const label = formatOptionQuantity(opt);
+        quantityValue.textContent = label;
+        const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
+        const current = effectiveQuantity(opt);
+        const changed = base != null && current != null && Math.abs(current - base) > 0.01;
+        quantityValue.classList.toggle('quantity-changed', changed);
       }
 
       const toggleBtn = article.querySelector('.option-actions button');
@@ -1994,10 +2371,16 @@
     function calcLine(opt, mode) {
       const overheadPct = state.data?.overhead_pct ?? 0.1;
       const defaultLaborPct = state.data?.cost_models?.labor?.default_pct ?? 0.3;
-      const materials = pickRange(opt, 'materials_total') || estimateFromUnit(opt);
-      const labor = pickLaborRange(opt, materials, defaultLaborPct);
-      const subtotal = pickRange(opt, 'subtotal') || addRanges(materials, labor);
-      const totalWithOverhead = pickRange(opt, 'total_with_overhead') || scaleRange(subtotal, 1 + overheadPct);
+      const quantityScale = getQuantityScale(opt);
+      const materialsBase = pickRange(opt, 'materials_total');
+      const materials = materialsBase ? scaleRange(materialsBase, quantityScale) : estimateFromUnit(opt);
+      const labor = pickLaborRange(opt, materials, quantityScale, defaultLaborPct);
+      const subtotalBase = pickRange(opt, 'subtotal');
+      const subtotal = subtotalBase ? scaleRange(subtotalBase, quantityScale) : addRanges(materials, labor);
+      const totalWithOverheadBase = pickRange(opt, 'total_with_overhead');
+      const totalWithOverhead = totalWithOverheadBase
+        ? scaleRange(totalWithOverheadBase, quantityScale)
+        : scaleRange(subtotal, 1 + overheadPct);
 
       switch (mode) {
         case 'materials_labor':
@@ -2007,6 +2390,110 @@
         default:
           return materials;
       }
+    }
+
+    /**
+     * Возвращает актуальное количество с учётом геометрии.
+     * @param {any} opt
+     */
+    function effectiveQuantity(opt) {
+      const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
+      if (base == null) return null;
+      const scale = getQuantityScale(opt);
+      const result = base * scale;
+      return Number.isFinite(result) && result > 0 ? result : base;
+    }
+
+    /**
+     * Коэффициент пересчёта количества.
+     * @param {any} opt
+     */
+    function getQuantityScale(opt) {
+      const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
+      if (base == null || base === 0) return 1;
+      const hint = detectGeometryHint(opt);
+      if (!hint) return 1;
+      if (!state.baseGeometry || !state.geometry) return 1;
+
+      if (hint.type === 'perimeter') {
+        const baseArea = state.baseGeometry.floor_area_m2;
+        const currentArea = state.geometry.floor_area_m2;
+        if (!baseArea || !currentArea) return 1;
+        const ratio = scalePerimeter(baseArea, base, currentArea);
+        return Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
+      }
+
+      const baseValue = state.baseGeometry[hint.key];
+      const currentValue = state.geometry[hint.key];
+      if (typeof baseValue !== 'number' || baseValue === 0 || typeof currentValue !== 'number') {
+        return 1;
+      }
+      const ratio = currentValue / baseValue;
+      return Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
+    }
+
+    /**
+     * Пытается определить, к какой геометрии привязана опция.
+     * @param {any} opt
+     */
+    function detectGeometryHint(opt) {
+      const text = `${opt.how_to_scale || ''} ${opt.description || ''} ${opt.name || ''}`.toLowerCase();
+      if (text.includes('периметр') || text.includes('ростверк')) {
+        return { type: 'perimeter', key: 'floor_area_m2' };
+      }
+      if (text.includes('сануз')) {
+        return { type: 'area', key: 'toilet_ceiling_area_m2' };
+      }
+      if (text.includes('антресол') || text.includes('mezzanin')) {
+        return { type: 'area', key: 'mezzanine_top_area_m2' };
+      }
+      if (text.includes('перегород') || text.includes('внутренн')) {
+        return { type: 'area', key: 'int_partitions_area_m2' };
+      }
+      if (text.includes('наружн') || text.includes('фасад') || text.includes('external wall')) {
+        return { type: 'area', key: 'ext_walls_area_m2' };
+      }
+      if (text.includes('кровл') || text.includes('roof')) {
+        return { type: 'area', key: 'roof_area_m2' };
+      }
+      if (text.includes('проём') || text.includes('проем') || text.includes('окон') || text.includes('двер')) {
+        return { type: 'area', key: 'openings_area_m2' };
+      }
+      if (text.includes('пол') || text.includes('floor')) {
+        return { type: 'area', key: 'floor_area_m2' };
+      }
+      if (opt.category_id === 'foundation' && opt.unit === 'm2') {
+        return { type: 'area', key: 'floor_area_m2' };
+      }
+      return null;
+    }
+
+    /**
+     * Масштабирует периметр при неизменной форме.
+     * @param {number} baseArea
+     * @param {number} basePerimeter
+     * @param {number} newArea
+     */
+    function scalePerimeter(baseArea, basePerimeter, newArea) {
+      if (!baseArea || !basePerimeter || !newArea) return 1;
+      if (baseArea <= 0 || basePerimeter <= 0 || newArea <= 0) return 1;
+      const halfPerimeter = basePerimeter / 2;
+      const discriminant = Math.max(halfPerimeter * halfPerimeter - 4 * baseArea, 0);
+      let width0 = (halfPerimeter - Math.sqrt(discriminant)) / 2;
+      let length0 = halfPerimeter - width0;
+      if (!Number.isFinite(width0) || width0 <= 0 || !Number.isFinite(length0) || length0 <= 0) {
+        width0 = Math.sqrt(baseArea);
+        length0 = width0;
+      }
+      const ratio = length0 / (width0 || 1);
+      const width1 = Math.sqrt(newArea / (ratio || 1));
+      const length1 = ratio * width1;
+      const newPerimeter = 2 * (length1 + width1);
+      if (!Number.isFinite(newPerimeter) || newPerimeter <= 0) {
+        const fallback = Math.sqrt(newArea / baseArea);
+        return Number.isFinite(fallback) && fallback > 0 ? fallback : 1;
+      }
+      return newPerimeter / basePerimeter;
     }
 
     /**
@@ -2053,20 +2540,22 @@
     function estimateFromUnit(opt) {
       const price = pickRange(opt, 'price');
       if (!price) return { min: 0, mid: 0, max: 0 };
-      const quantity = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : 1;
-      return scaleRange(price, quantity);
+      const quantity = effectiveQuantity(opt);
+      const fallback = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : 1;
+      return scaleRange(price, quantity ?? fallback);
     }
 
     /**
      * Получает диапазон стоимости работ.
      * @param {any} opt
      * @param {{min:number,mid:number,max:number}} materials
+     * @param {number} quantityScale
      * @param {number} defaultPct
      */
-    function pickLaborRange(opt, materials, defaultPct) {
+    function pickLaborRange(opt, materials, quantityScale, defaultPct) {
       if (opt.labor) {
         const labor = pickRange(opt.labor, 'labor_total');
-        if (labor) return labor;
+        if (labor) return scaleRange(labor, quantityScale);
         const param = typeof opt.labor.param === 'number' ? opt.labor.param : defaultPct;
         return scaleRange(materials, param);
       }
@@ -2186,6 +2675,10 @@
           state.autoSettings.includeLabor = !!parsed.autoSettings.includeLabor;
           state.autoSettings.includeOverhead = !!parsed.autoSettings.includeOverhead;
         }
+        if (parsed.geometry && state.baseGeometry) {
+          const restored = serializeGeometry(parsed.geometry, state.baseGeometry);
+          state.geometry = { ...state.baseGeometry, ...restored };
+        }
       } catch (error) {
         console.warn('Не удалось восстановить сохранённое состояние:', error);
       }
@@ -2206,6 +2699,7 @@
             search: state.filters.search,
           },
           autoSettings: { ...state.autoSettings },
+          geometry: serializeGeometry(state.geometry, state.baseGeometry),
         };
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (error) {
@@ -2289,6 +2783,39 @@
         updateStatus('Ошибка чтения файла');
       };
       reader.readAsText(file, 'utf-8');
+    }
+
+    /**
+     * Подготавливает объект геометрии для хранения/восстановления.
+     * @param {Record<string, number>|undefined|null} current
+     * @param {Record<string, number>|undefined|null} base
+     */
+    function serializeGeometry(current, base) {
+      if (!base) return {};
+      const result = {};
+      const source = current || {};
+      Object.keys(base).forEach((key) => {
+        const value = source[key];
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          result[key] = value;
+        }
+      });
+      return result;
+    }
+
+    /**
+     * Извлекает числовые геометрические параметры из входных данных.
+     * @param {any} geometry
+     */
+    function extractGeometry(geometry) {
+      if (!geometry || typeof geometry !== 'object') return {};
+      const result = {};
+      Object.entries(geometry).forEach(([key, value]) => {
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          result[key] = value;
+        }
+      });
+      return result;
     }
 
     /**
