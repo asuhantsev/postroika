@@ -61,10 +61,10 @@
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 320px minmax(0, 1.1fr) minmax(420px, 1fr);
-      gap: 1.5rem;
+      grid-template-columns: 340px minmax(0, 0.95fr) minmax(480px, 1fr);
+      gap: 1.6rem;
       padding: 1.75rem 3rem 2.5rem;
-      width: min(1400px, 100%);
+      width: min(1500px, 100%);
       margin: 0 auto;
       box-sizing: border-box;
     }
@@ -142,6 +142,26 @@
       padding: 0.45rem 0.65rem;
       font-size: 0.9rem;
       background: rgba(255, 255, 255, 0.9);
+      color: #0f172a;
+    }
+
+    .geometry-field input::placeholder {
+      color: #94a3b8;
+      opacity: 1;
+    }
+
+    .geometry-field input.input-error {
+      border-color: rgba(224, 49, 49, 0.65);
+      box-shadow: inset 0 0 0 1px rgba(224, 49, 49, 0.2);
+    }
+
+    .geometry-field.changed label {
+      color: #d9480f;
+    }
+
+    .geometry-field.changed input {
+      border-color: rgba(217, 72, 15, 0.6);
+      box-shadow: inset 0 0 0 1px rgba(217, 72, 15, 0.2);
     }
 
     .geometry-actions {
@@ -325,33 +345,45 @@
 
     .option-meta {
       display: grid;
-      gap: 0.3rem;
-      font-size: 0.85rem;
+      gap: 0.35rem;
+      font-size: 0.86rem;
       color: #475569;
     }
 
-    .option-meta strong {
+    .option-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: baseline;
+    }
+
+    .option-meta-label {
       font-weight: 600;
       color: #0b7285;
     }
 
-    .option-meta .scale-hint {
-      color: #6b7280;
-      font-size: 0.8rem;
-    }
-
-    .option-meta .option-basis {
-      color: #0c4a6e;
+    .option-meta-value {
+      color: #1f2937;
       font-weight: 500;
     }
 
-    .option-meta .option-quantity-value {
+    .option-meta-note {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .option-quantity-value {
       font-weight: 600;
       color: #0b7285;
     }
 
-    .option-meta .option-quantity-value.quantity-changed {
+    .option-quantity-value.quantity-changed {
       color: #d9480f;
+    }
+
+    .option-scale-factor {
+      color: #d9480f;
+      font-weight: 600;
     }
 
     .option-description {
@@ -366,14 +398,15 @@
     }
 
     .badge {
-      background: linear-gradient(135deg, rgba(11, 114, 133, 0.18) 0%, rgba(16, 152, 173, 0.28) 100%);
-      color: white;
+      background: rgba(12, 133, 153, 0.12);
+      color: #0c4a6e;
       border-radius: 999px;
       padding: 0.25rem 0.65rem;
       font-size: 0.74rem;
       font-weight: 600;
       letter-spacing: 0.01em;
       text-transform: uppercase;
+      border: 1px solid rgba(12, 133, 153, 0.25);
     }
 
     .completeness-warning {
@@ -643,20 +676,23 @@
     }
 
     .cart-remove {
-      border: none;
-      background: transparent;
+      border: 1px solid rgba(201, 42, 42, 0.4);
+      background: rgba(201, 42, 42, 0.08);
       color: #c92a2a;
-      font-size: 1rem;
+      font-size: 0.75rem;
       cursor: pointer;
       line-height: 1;
-      padding: 0.1rem;
-      border-radius: 50%;
-      transition: background 0.2s;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
     .cart-remove:hover,
     .cart-remove:focus-visible {
-      background: rgba(201, 42, 42, 0.12);
+      background: rgba(201, 42, 42, 0.16);
+      border-color: rgba(201, 42, 42, 0.6);
+      color: #a61e4d;
     }
 
     .cart-item-amount {
@@ -666,6 +702,7 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       align-items: baseline;
+      word-break: break-word;
     }
 
     .cart-item-amount strong {
@@ -724,6 +761,7 @@
       border-radius: 12px;
       padding: 0.6rem 0.75rem;
       background: rgba(255, 255, 255, 0.7);
+      overflow-wrap: anywhere;
     }
 
     .info-item strong {
@@ -759,9 +797,9 @@
 
     .range-row {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 0.4rem;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
     }
 
     .range-row span {
@@ -770,6 +808,8 @@
       border-radius: 8px;
       padding: 0.35rem 0.45rem;
       text-align: center;
+      word-break: break-word;
+      white-space: normal;
     }
 
     .range-row span strong {
@@ -935,6 +975,16 @@
       { key: 'mezzanine_top_area_m2', label: 'Площадь антресоли, м²', min: 0, step: 0.05 },
     ];
 
+    const GEOMETRY_SCALE_TEXT = {
+      floor_area_m2: { area: 'площади пола', perimeter: 'периметру пола' },
+      roof_area_m2: { area: 'площади кровли', perimeter: 'периметру кровли' },
+      ext_walls_area_m2: { area: 'площади наружных стен', perimeter: 'периметру наружных стен' },
+      int_partitions_area_m2: { area: 'площади внутренних перегородок', perimeter: 'периметру внутренних перегородок' },
+      openings_area_m2: { area: 'площади проёмов', perimeter: 'периметру проёмов' },
+      toilet_ceiling_area_m2: { area: 'площади потолка санузла', perimeter: 'периметру потолка санузла' },
+      mezzanine_top_area_m2: { area: 'площади антресоли', perimeter: 'периметру антресоли' },
+    };
+
     const state = {
       rawData: null,
       data: null,
@@ -956,6 +1006,7 @@
       },
       autoResults: [],
       baseGeometry: {},
+      geometryOverrides: {},
       geometry: {},
     };
 
@@ -1010,7 +1061,8 @@
         state.rawData = normalized;
         state.data = valid ? normalized : null;
         state.baseGeometry = extractGeometry(normalized.geometry);
-        state.geometry = { ...state.baseGeometry };
+        state.geometryOverrides = {};
+        applyGeometryOverrides();
         state.warnings = warnings;
         if (!valid) {
           filtersContent.innerHTML = '<p>Структура данных не полна, проверьте предупреждения.</p>';
@@ -1075,7 +1127,8 @@
       fields.className = 'geometry-fields';
 
       GEOMETRY_FIELDS.forEach((field) => {
-        if (typeof state.baseGeometry[field.key] !== 'number') return;
+        const baseValue = state.baseGeometry[field.key];
+        if (typeof baseValue !== 'number') return;
         const wrapper = document.createElement('div');
         wrapper.className = 'geometry-field';
         const label = document.createElement('label');
@@ -1084,10 +1137,28 @@
         const input = document.createElement('input');
         input.type = 'number';
         input.id = `geometry-${field.key}`;
+        input.dataset.key = field.key;
         if (field.min != null) input.min = String(field.min);
         if (field.step != null) input.step = String(field.step);
-        input.value = formatNumber(state.geometry?.[field.key] ?? state.baseGeometry[field.key]);
+        input.placeholder = formatGeometryInput(baseValue);
+        const override = state.geometryOverrides?.[field.key];
+        if (typeof override === 'number' && Number.isFinite(override) && Math.abs(override - baseValue) > 0.0001) {
+          input.value = formatGeometryInput(override);
+          wrapper.classList.add('changed');
+        } else {
+          input.value = '';
+        }
+        input.addEventListener('focus', () => {
+          if (input.value === '') {
+            input.value = formatGeometryInput(baseValue);
+            input.select();
+          }
+        });
         input.addEventListener('input', (event) => {
+          if (!(event.target instanceof HTMLInputElement)) return;
+          handleGeometryInput(field.key, event.target);
+        });
+        input.addEventListener('change', (event) => {
           if (!(event.target instanceof HTMLInputElement)) return;
           handleGeometryInput(field.key, event.target);
         });
@@ -1119,15 +1190,34 @@
      */
     function handleGeometryInput(key, input) {
       if (!state.baseGeometry || typeof state.baseGeometry[key] !== 'number') return;
-      const raw = input.value;
-      if (raw === '') return;
-      const value = Number(raw);
+      const raw = input.value.trim();
+      const wrapper = input.closest('.geometry-field');
+      if (!state.geometryOverrides) state.geometryOverrides = {};
+      if (raw === '') {
+        delete state.geometryOverrides[key];
+        input.value = '';
+        wrapper?.classList.remove('changed');
+        geometryUpdated();
+        return;
+      }
+      const sanitized = raw.replace(',', '.');
+      const value = Number(sanitized);
       const def = GEOMETRY_FIELDS.find((field) => field.key === key);
       const min = def?.min ?? 0;
-      if (!Number.isFinite(value) || value < min) return;
-      if (!state.geometry) state.geometry = { ...state.baseGeometry };
-      state.geometry[key] = value;
-      input.value = formatNumber(value);
+      if (!Number.isFinite(value) || value < min) {
+        input.classList.add('input-error');
+        return;
+      }
+      input.classList.remove('input-error');
+      const base = state.baseGeometry[key];
+      if (Math.abs(value - base) <= 0.0001) {
+        delete state.geometryOverrides[key];
+        wrapper?.classList.remove('changed');
+      } else {
+        state.geometryOverrides[key] = value;
+        wrapper?.classList.add('changed');
+      }
+      input.value = formatGeometryInput(value);
       geometryUpdated();
     }
 
@@ -1135,21 +1225,22 @@
      * Сбрасывает геометрию к исходным значениям.
      */
     function resetGeometry() {
-      state.geometry = { ...state.baseGeometry };
+      state.geometryOverrides = {};
       geometryUpdated();
-      renderFilters();
     }
 
     /**
      * Сохраняет и пересчитывает состояние после обновления геометрии.
      */
     function geometryUpdated() {
+      applyGeometryOverrides();
       persistState();
       syncOptionCards();
       renderSummary();
       if (state.autoResults.length) {
         runAutoAssembly();
       }
+      refreshGeometryInputs();
     }
 
     /**
@@ -1482,7 +1573,7 @@
           removeBtn.type = 'button';
           removeBtn.className = 'cart-remove';
           removeBtn.setAttribute('aria-label', `Удалить «${option.name || option.id}» из корзины`);
-          removeBtn.textContent = '×';
+          removeBtn.textContent = 'Удалить';
           removeBtn.addEventListener('click', () => {
             toggleOption(option.id);
           });
@@ -1994,6 +2085,18 @@
     }
 
     /**
+     * Форматирует значение геометрии для инпута.
+     * @param {number} value
+     */
+    function formatGeometryInput(value) {
+      if (value == null || Number.isNaN(value)) return '';
+      const abs = Math.abs(value);
+      const decimals = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+      const formatted = value.toFixed(decimals);
+      return decimals === 0 ? formatted : formatted.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+    }
+
+    /**
      * Форматирует метрику площади/количества.
      * @param {number|null|undefined} value
      */
@@ -2008,20 +2111,94 @@
     }
 
     /**
+     * Локализует текст единиц измерения и подсказок.
+     * @param {string} text
+     */
+    function localizeMeasurementText(text) {
+      if (!text) return text;
+      let result = String(text);
+      const replacements = [
+        { pattern: /\bpcs?\b/gi, value: 'шт.' },
+        { pattern: /\bpieces?\b/gi, value: 'шт.' },
+        { pattern: /\bper\s+room\b/gi, value: 'на помещение' },
+        { pattern: /\bper\s+project\b/gi, value: 'на проект' },
+        { pattern: /\bper\s+house\b/gi, value: 'на дом' },
+        { pattern: /\bsq\.?\s*m\b/gi, value: 'м²' },
+        { pattern: /\bsquare\s+meters?\b/gi, value: 'м²' },
+        { pattern: /\blinear\s+meters?\b/gi, value: 'погонные метры' },
+        { pattern: /\bmeters?\b/gi, value: 'метры' },
+        { pattern: /\bmm\b/gi, value: 'мм' },
+      ];
+      replacements.forEach(({ pattern, value }) => {
+        result = result.replace(pattern, value);
+      });
+      result = result.replace(/\s*·\s*/g, ' • ');
+      result = result.replace(/\s{2,}/g, ' ').trim();
+      return result;
+    }
+
+    /**
      * Строка с количеством для проекта.
      * @param {any} opt
      */
     function formatOptionQuantity(opt) {
-      const unit = opt.unit || '';
+      const unit = opt.unit ? localizeMeasurementText(opt.unit) : '';
       const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
       const current = effectiveQuantity(opt);
       const currentText = current != null ? formatMeasure(current) : base != null ? formatMeasure(base) : null;
       if (!currentText) return unit || '—';
       let text = `${currentText}${unit ? ` ${unit}` : ''}`.trim();
       if (base != null && current != null && Math.abs(current - base) > 0.01) {
-        text += ` (базово: ${formatMeasure(base)}${unit ? ` ${unit}` : ''})`;
+        const baseText = `${formatMeasure(base)}${unit ? ` ${unit}` : ''}`.trim();
+        text += ` (базово: ${baseText})`;
       }
-      return text;
+      return localizeMeasurementText(text);
+    }
+
+    /**
+     * Форматирует базис расчёта опции.
+     * @param {any} opt
+     */
+    function formatOptionBasis(opt) {
+      const basisRaw = typeof opt.price_unit_basis === 'string' ? opt.price_unit_basis.trim() : '';
+      const unit = opt.unit ? localizeMeasurementText(opt.unit) : '';
+      if (!basisRaw && !unit) return '';
+      if (!basisRaw) {
+        return localizeMeasurementText(`1 ${unit}`.trim());
+      }
+      const localizedBasis = localizeMeasurementText(basisRaw);
+      if (unit && localizedBasis.toLowerCase().includes(unit.toLowerCase())) {
+        return localizedBasis;
+      }
+      return unit ? `${localizedBasis} (${unit})` : localizedBasis;
+    }
+
+    /**
+     * Возвращает описание масштабирования для опции.
+     * @param {any} opt
+     */
+    function describeOptionScaling(opt) {
+      const hint = detectGeometryHint(opt);
+      if (!hint || !hint.key) return null;
+      const phrase = geometryScalePhrase(hint);
+      if (!phrase) return null;
+      const ratio = getQuantityScale(opt);
+      const showFactor = Number.isFinite(ratio) && Math.abs(ratio - 1) > 0.01;
+      return {
+        text: phrase.startsWith('по ') ? phrase : `по ${phrase}`,
+        factor: ratio,
+        showFactor,
+        note: hint.note ? localizeMeasurementText(hint.note) : null,
+      };
+    }
+
+    /**
+     * Форматирует коэффициент масштабирования.
+     * @param {number} value
+     */
+    function formatScaleFactor(value) {
+      if (!Number.isFinite(value)) return '1,00';
+      return new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
     }
 
     /**
@@ -2061,33 +2238,74 @@
       const unitInfo = document.createElement('div');
       unitInfo.className = 'option-meta';
 
-      const quantityLine = document.createElement('div');
-      quantityLine.className = 'option-quantity';
-      const quantityLabel = document.createElement('strong');
-      quantityLabel.textContent = 'Количество:';
+      const quantityRow = document.createElement('div');
+      quantityRow.className = 'option-meta-row';
+      const quantityLabel = document.createElement('span');
+      quantityLabel.className = 'option-meta-label';
+      quantityLabel.textContent = 'Текущее количество';
       const quantityValue = document.createElement('span');
-      quantityValue.className = 'option-quantity-value';
+      quantityValue.className = 'option-meta-value option-quantity-value';
       quantityValue.textContent = formatOptionQuantity(opt);
-      quantityLine.append(quantityLabel, quantityValue);
-      unitInfo.append(quantityLine);
+      quantityRow.append(quantityLabel, quantityValue);
+      unitInfo.append(quantityRow);
 
-      if (opt.price_unit_basis) {
-        const basis = document.createElement('div');
-        basis.className = 'option-basis';
-        basis.textContent = opt.price_unit_basis;
-        unitInfo.append(basis);
-      } else if (opt.unit) {
-        const unitLine = document.createElement('div');
-        unitLine.className = 'option-basis';
-        unitLine.textContent = `Ед. измерения: ${opt.unit}`;
-        unitInfo.append(unitLine);
+      const basisText = formatOptionBasis(opt);
+      if (basisText) {
+        const basisRow = document.createElement('div');
+        basisRow.className = 'option-meta-row';
+        const basisLabel = document.createElement('span');
+        basisLabel.className = 'option-meta-label';
+        basisLabel.textContent = 'Базис расчёта';
+        const basisValue = document.createElement('span');
+        basisValue.className = 'option-meta-value';
+        basisValue.textContent = basisText;
+        basisRow.append(basisLabel, basisValue);
+        unitInfo.append(basisRow);
+      }
+
+      const scaling = describeOptionScaling(opt);
+      if (scaling) {
+        const scaleRow = document.createElement('div');
+        scaleRow.className = 'option-meta-row';
+        const scaleLabel = document.createElement('span');
+        scaleLabel.className = 'option-meta-label';
+        scaleLabel.textContent = 'Масштаб';
+        const scaleValue = document.createElement('span');
+        scaleValue.className = 'option-meta-value';
+        scaleValue.textContent = scaling.text;
+        if (scaling.showFactor) {
+          const factor = document.createElement('span');
+          factor.className = 'option-scale-factor';
+          factor.textContent = `×${formatScaleFactor(scaling.factor)}`;
+          scaleValue.append(' ', factor);
+        }
+        scaleRow.append(scaleLabel, scaleValue);
+        unitInfo.append(scaleRow);
+        if (scaling.note) {
+          const noteRow = document.createElement('div');
+          noteRow.className = 'option-meta-row';
+          const noteLabel = document.createElement('span');
+          noteLabel.className = 'option-meta-label';
+          noteLabel.textContent = 'Примечание';
+          const noteValue = document.createElement('span');
+          noteValue.className = 'option-meta-note';
+          noteValue.textContent = scaling.note;
+          noteRow.append(noteLabel, noteValue);
+          unitInfo.append(noteRow);
+        }
       }
 
       if (opt.how_to_scale) {
-        const scale = document.createElement('div');
-        scale.className = 'scale-hint';
-        scale.textContent = opt.how_to_scale;
-        unitInfo.append(scale);
+        const hintRow = document.createElement('div');
+        hintRow.className = 'option-meta-row';
+        const hintLabel = document.createElement('span');
+        hintLabel.className = 'option-meta-label';
+        hintLabel.textContent = 'Пояснение';
+        const hintValue = document.createElement('span');
+        hintValue.className = 'option-meta-note';
+        hintValue.textContent = localizeMeasurementText(opt.how_to_scale);
+        hintRow.append(hintLabel, hintValue);
+        unitInfo.append(hintRow);
       }
 
       header.append(title, unitInfo);
@@ -2419,7 +2637,8 @@
         const baseArea = state.baseGeometry.floor_area_m2;
         const currentArea = state.geometry.floor_area_m2;
         if (!baseArea || !currentArea) return 1;
-        const ratio = scalePerimeter(baseArea, base, currentArea);
+        let ratio = scalePerimeter(baseArea, base, currentArea);
+        ratio = applyScalingAdjustments(ratio, hint);
         return Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
       }
 
@@ -2428,8 +2647,29 @@
       if (typeof baseValue !== 'number' || baseValue === 0 || typeof currentValue !== 'number') {
         return 1;
       }
-      const ratio = currentValue / baseValue;
+      let ratio = currentValue / baseValue;
+      ratio = applyScalingAdjustments(ratio, hint);
       return Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
+    }
+
+    /**
+     * Корректирует коэффициент с учётом настроек масштабирования.
+     * @param {number} ratio
+     * @param {{multiplier?:number,offset?:number,min?:number,max?:number}} hint
+     */
+    function applyScalingAdjustments(ratio, hint) {
+      let value = Number.isFinite(ratio) ? ratio : 1;
+      const multiplier = typeof hint.multiplier === 'number' && Number.isFinite(hint.multiplier) ? hint.multiplier : 1;
+      const offset = typeof hint.offset === 'number' && Number.isFinite(hint.offset) ? hint.offset : 0;
+      value *= multiplier;
+      if (offset) value += offset;
+      if (typeof hint.min === 'number' && Number.isFinite(hint.min)) {
+        value = Math.max(value, hint.min);
+      }
+      if (typeof hint.max === 'number' && Number.isFinite(hint.max)) {
+        value = Math.min(value, hint.max);
+      }
+      return value;
     }
 
     /**
@@ -2437,6 +2677,8 @@
      * @param {any} opt
      */
     function detectGeometryHint(opt) {
+      const scaling = normalizeScalingDescriptor(opt.scaling);
+      if (scaling) return scaling;
       const text = `${opt.how_to_scale || ''} ${opt.description || ''} ${opt.name || ''}`.toLowerCase();
       if (text.includes('периметр') || text.includes('ростверк')) {
         return { type: 'perimeter', key: 'floor_area_m2' };
@@ -2466,6 +2708,74 @@
         return { type: 'area', key: 'floor_area_m2' };
       }
       return null;
+    }
+
+    /**
+     * Подбирает фразу для описания масштабирования.
+     * @param {{key:string,type:string,label?:string,display?:string}} hint
+     */
+    function geometryScalePhrase(hint) {
+      if (!hint || !hint.key) return '';
+      if (hint.display) return hint.display;
+      if (hint.label) return hint.label;
+      const entry = GEOMETRY_SCALE_TEXT[hint.key];
+      if (entry) {
+        if (hint.type === 'perimeter' && entry.perimeter) return entry.perimeter;
+        if (entry.area) return entry.area;
+      }
+      const fallback = hint.key.replace(/_/g, ' ').toLowerCase();
+      return hint.type === 'perimeter' ? `периметру ${fallback}` : fallback;
+    }
+
+    /**
+     * Нормализует объект масштабирования из данных.
+     * @param {any} scaling
+     */
+    function normalizeScalingDescriptor(scaling) {
+      if (!scaling || typeof scaling !== 'object') return null;
+      const key = typeof scaling.geometry_key === 'string'
+        ? scaling.geometry_key
+        : typeof scaling.key === 'string'
+          ? scaling.key
+          : null;
+      if (!key) return null;
+      const methodRaw = typeof scaling.method === 'string'
+        ? scaling.method
+        : typeof scaling.type === 'string'
+          ? scaling.type
+          : 'area';
+      const method = methodRaw.toLowerCase();
+      if (method === 'none' || method === 'fixed') return null;
+      const descriptor = {
+        type: method === 'perimeter' ? 'perimeter' : 'area',
+        key,
+      };
+      if (typeof scaling.multiplier === 'number' && Number.isFinite(scaling.multiplier)) {
+        descriptor.multiplier = scaling.multiplier;
+      }
+      if (typeof scaling.offset === 'number' && Number.isFinite(scaling.offset)) {
+        descriptor.offset = scaling.offset;
+      }
+      if (typeof scaling.min_multiplier === 'number' && Number.isFinite(scaling.min_multiplier)) {
+        descriptor.min = scaling.min_multiplier;
+      }
+      if (typeof scaling.max_multiplier === 'number' && Number.isFinite(scaling.max_multiplier)) {
+        descriptor.max = scaling.max_multiplier;
+      }
+      if (typeof scaling.label === 'string') {
+        descriptor.label = scaling.label;
+      }
+      if (typeof scaling.display === 'string') {
+        descriptor.display = scaling.display;
+      } else if (typeof scaling.phrase === 'string') {
+        descriptor.display = scaling.phrase;
+      }
+      if (typeof scaling.note === 'string') {
+        descriptor.note = scaling.note;
+      } else if (typeof scaling.description === 'string') {
+        descriptor.note = scaling.description;
+      }
+      return descriptor;
     }
 
     /**
@@ -2675,9 +2985,15 @@
           state.autoSettings.includeLabor = !!parsed.autoSettings.includeLabor;
           state.autoSettings.includeOverhead = !!parsed.autoSettings.includeOverhead;
         }
-        if (parsed.geometry && state.baseGeometry) {
-          const restored = serializeGeometry(parsed.geometry, state.baseGeometry);
-          state.geometry = { ...state.baseGeometry, ...restored };
+        if (state.baseGeometry) {
+          let overrides = {};
+          if (parsed.geometryOverrides) {
+            overrides = restoreGeometryOverrides(parsed.geometryOverrides, state.baseGeometry);
+          } else if (parsed.geometry) {
+            overrides = restoreGeometryOverrides(parsed.geometry, state.baseGeometry);
+          }
+          state.geometryOverrides = overrides;
+          applyGeometryOverrides();
         }
       } catch (error) {
         console.warn('Не удалось восстановить сохранённое состояние:', error);
@@ -2700,6 +3016,7 @@
           },
           autoSettings: { ...state.autoSettings },
           geometry: serializeGeometry(state.geometry, state.baseGeometry),
+          geometryOverrides: serializeGeometryOverrides(state.geometryOverrides, state.baseGeometry),
         };
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (error) {
@@ -2804,6 +3121,51 @@
     }
 
     /**
+     * Сохраняет только отличия от базовой геометрии.
+     * @param {Record<string, number>|undefined|null} overrides
+     * @param {Record<string, number>|undefined|null} base
+     */
+    function serializeGeometryOverrides(overrides, base) {
+      if (!base) return {};
+      const result = {};
+      const source = overrides || {};
+      Object.entries(source).forEach(([key, value]) => {
+        const baseValue = base[key];
+        if (
+          typeof baseValue === 'number'
+          && typeof value === 'number'
+          && Number.isFinite(value)
+          && Math.abs(value - baseValue) > 0.0001
+        ) {
+          result[key] = value;
+        }
+      });
+      return result;
+    }
+
+    /**
+     * Восстанавливает отличия геометрии из сохранённого состояния.
+     * @param {Record<string, number>|undefined|null} raw
+     * @param {Record<string, number>|undefined|null} base
+     */
+    function restoreGeometryOverrides(raw, base) {
+      if (!raw || !base) return {};
+      const result = {};
+      Object.entries(raw).forEach(([key, value]) => {
+        const baseValue = base[key];
+        if (
+          typeof baseValue === 'number'
+          && typeof value === 'number'
+          && Number.isFinite(value)
+          && Math.abs(value - baseValue) > 0.0001
+        ) {
+          result[key] = value;
+        }
+      });
+      return result;
+    }
+
+    /**
      * Извлекает числовые геометрические параметры из входных данных.
      * @param {any} geometry
      */
@@ -2816,6 +3178,47 @@
         }
       });
       return result;
+    }
+
+    /**
+     * Применяет текущие оверрайды к базовой геометрии.
+     */
+    function applyGeometryOverrides() {
+      if (!state.baseGeometry || typeof state.baseGeometry !== 'object') {
+        state.geometry = {};
+        return;
+      }
+      const computed = { ...state.baseGeometry };
+      Object.entries(state.geometryOverrides || {}).forEach(([key, value]) => {
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          computed[key] = value;
+        }
+      });
+      state.geometry = computed;
+    }
+
+    /**
+     * Синхронизирует значения инпутов геометрии с текущим состоянием.
+     */
+    function refreshGeometryInputs() {
+      if (!state.baseGeometry) return;
+      const inputs = filtersContent.querySelectorAll('.geometry-field input');
+      inputs.forEach((input) => {
+        const key = input.dataset.key;
+        if (!key || typeof state.baseGeometry[key] !== 'number') return;
+        const baseValue = state.baseGeometry[key];
+        const override = state.geometryOverrides?.[key];
+        input.placeholder = formatGeometryInput(baseValue);
+        if (typeof override === 'number' && Number.isFinite(override) && Math.abs(override - baseValue) > 0.0001) {
+          input.value = formatGeometryInput(override);
+          input.classList.remove('input-error');
+          input.closest('.geometry-field')?.classList.add('changed');
+        } else {
+          input.value = '';
+          input.classList.remove('input-error');
+          input.closest('.geometry-field')?.classList.remove('changed');
+        }
+      });
     }
 
     /**
