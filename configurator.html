@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Конфигуратор дома</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg: #f7f7f8;
+      --fg: #222;
+      --accent: #0b7285;
+      --accent-weak: rgba(11, 114, 133, 0.15);
+      --border: #d0d0d5;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    #status {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr) 320px;
+      gap: 1rem;
+      padding: 1rem 2rem 2rem;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+    }
+
+    #filters-panel,
+    #categories-panel,
+    #summary-panel {
+      min-height: 0;
+    }
+
+    .scrollable {
+      overflow: auto;
+      flex: 1;
+      padding-right: 0.25rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .filter-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group h3 {
+      font-size: 0.9rem;
+      margin: 0 0 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6b7280;
+    }
+
+    .filter-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .filter-list button {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      background: white;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .filter-list button[aria-pressed="true"] {
+      background: var(--accent-weak);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-row label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    details.category-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    details.category-block[open] {
+      background: rgba(11, 114, 133, 0.05);
+      border-color: rgba(11, 114, 133, 0.3);
+    }
+
+    details.category-block summary {
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      outline: none;
+    }
+
+    details.category-block summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.category-block summary::after {
+      content: '▸';
+      float: right;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+    }
+
+    details.category-block[open] summary::after {
+      transform: rotate(90deg);
+    }
+
+    .category-placeholder {
+      padding: 0.5rem 0 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    details.category-block.no-match summary {
+      opacity: 0.5;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .option-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      background: white;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .option-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-weak);
+    }
+
+    .option-card.conflict {
+      border-color: #e03131;
+      box-shadow: 0 0 0 2px rgba(224, 49, 49, 0.15);
+    }
+
+    .option-card header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .option-card h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .option-meta {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .option-description {
+      font-size: 0.9rem;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .badge {
+      background: var(--accent-weak);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .completeness-warning {
+      color: #a61e4d;
+      font-size: 0.85rem;
+    }
+
+    .price-table {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
+      font-size: 0.85rem;
+    }
+
+    .price-table div {
+      background: rgba(15, 23, 42, 0.03);
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+    }
+
+    .price-table strong {
+      display: block;
+      font-size: 0.8rem;
+      color: #4b5563;
+      text-transform: uppercase;
+    }
+
+    .option-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .option-actions button {
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      padding: 0.45rem 0.9rem;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .option-actions button.secondary {
+      background: white;
+      color: var(--accent);
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      border-radius: 10px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+      padding: 0.6rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--accent);
+      padding: 0.55rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    #dialog {
+      border: none;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 420px;
+      width: calc(100% - 3rem);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+      background: white;
+    }
+
+    #dialog::backdrop {
+      background: rgba(15, 23, 42, 0.35);
+    }
+
+    #dialog h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    #dialog p {
+      margin: 0.75rem 0 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    #summary-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .summary-section {
+      background: rgba(248, 250, 252, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .summary-section h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .summary-section table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .summary-section th,
+    .summary-section td {
+      padding: 0.4rem 0.3rem;
+      text-align: right;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .summary-section th:first-child,
+    .summary-section td:first-child {
+      text-align: left;
+    }
+
+    .summary-section tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .info-item strong {
+      display: block;
+      font-size: 0.85rem;
+      color: #0b7285;
+    }
+
+    #totals-footer {
+      padding: 1.5rem 2rem 2rem;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    #totals-content {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    #totals-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    #totals-content th,
+    #totals-content td {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 0.5rem 0.3rem;
+      text-align: right;
+    }
+
+    #totals-content th:first-child,
+    #totals-content td:first-child {
+      text-align: left;
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: #000;
+      }
+      header,
+      #filters-panel,
+      .actions-row,
+      #auto-section,
+      #dialog {
+        display: none !important;
+      }
+      main {
+        grid-template-columns: 1fr;
+        padding: 0;
+      }
+      .panel {
+        box-shadow: none;
+        border: none;
+      }
+      #categories-panel,
+      #summary-panel {
+        border: none;
+      }
+      #totals-footer {
+        border-top: none;
+      }
+    }
+
+    #fallback {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    #fallback.dragover {
+      border-color: var(--accent);
+      background: rgba(11, 114, 133, 0.08);
+    }
+
+    #warnings {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: #a61e4d;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Конфигуратор сборки домика</h1>
+    <div id="status" role="status">Загрузка данных…</div>
+  </header>
+  <main>
+    <section id="filters-panel" class="panel" aria-label="Фильтры">
+      <h2>Фильтры</h2>
+      <div id="filters-content" class="scrollable">Данные ещё не загружены.</div>
+    </section>
+    <section id="categories-panel" class="panel" aria-label="Категории и опции">
+      <h2>Опции</h2>
+      <div id="categories-content" class="scrollable">Нет данных для отображения.</div>
+    </section>
+    <section id="summary-panel" class="panel" aria-label="Корзина и сводка">
+      <h2>Корзина и справка</h2>
+      <div id="summary-wrapper" class="scrollable">
+        <section id="cart-section" class="summary-section" aria-live="polite"></section>
+        <section id="info-section" class="summary-section"></section>
+        <section id="auto-section" class="summary-section"></section>
+      </div>
+    </section>
+  </main>
+  <footer id="totals-footer" aria-label="Итоговый свод">
+    <div id="totals-content">Выберите опции, чтобы увидеть свод.</div>
+  </footer>
+  <dialog id="dialog" aria-modal="true"></dialog>
+  <script>
+    /**
+     * @typedef {import('./types').ProjectData} ProjectData
+     * временный JSDoc для редакторов, в рантайме не используется
+     */
+
+    const STORAGE_KEY = 'house-configurator-v1';
+
+    const state = {
+      rawData: null,
+      data: null,
+      index: null,
+      warnings: [],
+      fallbackEnabled: false,
+      selection: new Set(),
+      mode: 'materials',
+      rounding: true,
+      filters: {
+        categories: new Set(),
+        tags: new Set(),
+        search: '',
+      },
+      conflicts: new Map(),
+      autoSettings: {
+        includeLabor: false,
+        includeOverhead: false,
+      },
+      autoResults: [],
+    };
+
+    const statusEl = document.getElementById('status');
+    const filtersContent = document.getElementById('filters-content');
+    const categoriesContent = document.getElementById('categories-content');
+    const cartContent = document.getElementById('cart-section');
+    const infoContent = document.getElementById('info-section');
+    const autoContent = document.getElementById('auto-section');
+    const totalsContent = document.getElementById('totals-content');
+    const dialogEl = document.getElementById('dialog');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+
+    /**
+     * Выполняет попытку fetch + fallback на ручную загрузку файла.
+     */
+    async function loadData() {
+      updateStatus('Пробую загрузить data.json…');
+      try {
+        const resp = await fetch('./data.json', { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
+        handleDataText(text);
+      } catch (err) {
+        console.warn('Не удалось получить data.json через fetch:', err);
+        enableFallback();
+      }
+    }
+
+    /**
+     * Ставит статус и рендерит предупреждения, если уже есть.
+     * @param {string} message
+     */
+    function updateStatus(message) {
+      statusEl.textContent = message;
+      renderWarnings();
+    }
+
+    /**
+     * Обработка текста файла: очистка HTML и парсинг JSON.
+     * @param {string} text
+     */
+    function handleDataText(text) {
+      const cleaned = stripHtmlToJson(text);
+      try {
+        const parsed = JSON.parse(cleaned);
+        const normalized = normalizeProjectData(parsed);
+        const { warnings, valid } = validateData(normalized);
+        state.rawData = normalized;
+        state.data = valid ? normalized : null;
+        state.warnings = warnings;
+        if (!valid) {
+          filtersContent.innerHTML = '<p>Структура данных не полна, проверьте предупреждения.</p>';
+          updateStatus('Ошибка валидации данных');
+          return;
+        }
+        state.index = buildIndex(state.data);
+        restoreState();
+        updateStatus('Данные загружены. Индексы построены.');
+        renderFilters();
+        renderCategoriesSkeleton();
+        renderSummary();
+      } catch (error) {
+        console.error('Ошибка парсинга JSON:', error);
+        state.warnings.push('Не удалось разобрать JSON. Убедитесь, что файл содержит корректную структуру.');
+        updateStatus('Ошибка чтения данных');
+      }
+    }
+
+    /**
+     * Показывает базовую информацию после успешной загрузки данных.
+     */
+    function renderDataReadiness() {
+      renderFilters();
+      renderCategoriesSkeleton();
+      renderSummary();
+    }
+
+    /**
+     * Рендер фильтров: поиск, категории, теги и базовые переключатели режимов.
+     */
+    function renderFilters() {
+      if (!state.index) return;
+      const categories = state.index.categories;
+      const tags = state.index.tags;
+
+      const search = document.createElement('input');
+      search.type = 'search';
+      search.className = 'search-input';
+      search.placeholder = 'Поиск по опциям…';
+      search.value = state.filters.search;
+      search.addEventListener('input', (event) => {
+        state.filters.search = event.target.value;
+        persistState();
+        applyFilters();
+      });
+
+      const modeGroup = document.createElement('div');
+      modeGroup.className = 'toggle-row';
+      modeGroup.innerHTML = `
+        <label><input type="radio" name="mode" value="materials" ${state.mode === 'materials' ? 'checked' : ''}> Материалы</label>
+        <label><input type="radio" name="mode" value="materials_labor" ${state.mode === 'materials_labor' ? 'checked' : ''}> Материалы + работы</label>
+        <label><input type="radio" name="mode" value="materials_labor_overhead" ${state.mode === 'materials_labor_overhead' ? 'checked' : ''}> Материалы + работы + накладные</label>
+      `;
+      modeGroup.addEventListener('change', (event) => {
+        if (event.target instanceof HTMLInputElement) {
+          state.mode = event.target.value;
+          persistState();
+          syncOptionCards();
+          renderSummary();
+        }
+      });
+
+      const roundingLabel = document.createElement('label');
+      roundingLabel.className = 'toggle-row';
+      roundingLabel.innerHTML = `
+        <label><input type="checkbox" id="rounding-toggle" ${state.rounding ? 'checked' : ''}> Округлять до рублей</label>
+      `;
+      roundingLabel.addEventListener('change', () => {
+        const toggle = document.getElementById('rounding-toggle');
+        state.rounding = !!toggle?.checked;
+        persistState();
+        syncOptionCards();
+        renderSummary();
+      });
+
+      const categoriesGroup = document.createElement('div');
+      categoriesGroup.className = 'filter-group';
+      categoriesGroup.innerHTML = '<h3>Категории</h3>';
+      const catList = document.createElement('ul');
+      catList.className = 'filter-list';
+      categories.forEach((cat) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = cat.name || cat.id;
+        const pressed = state.filters.categories.has(cat.id);
+        btn.setAttribute('aria-pressed', String(pressed));
+        btn.addEventListener('click', () => {
+          if (state.filters.categories.has(cat.id)) {
+            state.filters.categories.delete(cat.id);
+          } else {
+            state.filters.categories.add(cat.id);
+          }
+          btn.setAttribute('aria-pressed', String(state.filters.categories.has(cat.id)));
+          persistState();
+          applyFilters();
+        });
+        catList.append(btn);
+      });
+      categoriesGroup.append(catList);
+
+      const tagGroup = document.createElement('div');
+      tagGroup.className = 'filter-group';
+      tagGroup.innerHTML = '<h3>Теги</h3>';
+      const tagList = document.createElement('ul');
+      tagList.className = 'filter-list';
+      tags.forEach((tag) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = tag;
+        const pressed = state.filters.tags.has(tag);
+        btn.setAttribute('aria-pressed', String(pressed));
+        btn.addEventListener('click', () => {
+          if (state.filters.tags.has(tag)) {
+            state.filters.tags.delete(tag);
+          } else {
+            state.filters.tags.add(tag);
+          }
+          btn.setAttribute('aria-pressed', String(state.filters.tags.has(tag)));
+          persistState();
+          applyFilters();
+        });
+        tagList.append(btn);
+      });
+      tagGroup.append(tagList);
+
+      const autoGroup = document.createElement('div');
+      autoGroup.className = 'filter-group';
+      autoGroup.innerHTML = '<h3>Автосборка</h3>';
+      const autoControls = document.createElement('div');
+      autoControls.className = 'toggle-row';
+      autoControls.style.flexDirection = 'column';
+
+      const laborLabel = document.createElement('label');
+      laborLabel.innerHTML = `<input type="checkbox" id="auto-labor" ${state.autoSettings.includeLabor ? 'checked' : ''}> Учитывать работы`;
+      const overheadLabel = document.createElement('label');
+      overheadLabel.innerHTML = `<input type="checkbox" id="auto-overhead" ${state.autoSettings.includeOverhead ? 'checked' : ''}> Учитывать накладные`;
+      autoControls.append(laborLabel, overheadLabel);
+      autoGroup.append(autoControls);
+
+      const assembleBtn = document.createElement('button');
+      assembleBtn.type = 'button';
+      assembleBtn.className = 'primary-button';
+      assembleBtn.textContent = 'Собрать 3 комплекта';
+      assembleBtn.addEventListener('click', runAutoAssembly);
+      autoGroup.append(assembleBtn);
+
+      filtersContent.innerHTML = '';
+      filtersContent.append(search, modeGroup, roundingLabel, categoriesGroup, tagGroup, autoGroup);
+
+      const laborToggle = laborLabel.querySelector('input');
+      const overheadToggle = overheadLabel.querySelector('input');
+      if (overheadToggle) {
+        overheadToggle.disabled = !state.autoSettings.includeLabor;
+      }
+      laborToggle?.addEventListener('change', () => {
+        state.autoSettings.includeLabor = !!laborToggle.checked;
+        if (!state.autoSettings.includeLabor) {
+          state.autoSettings.includeOverhead = false;
+          if (overheadToggle) {
+            overheadToggle.checked = false;
+            overheadToggle.disabled = true;
+          }
+        } else if (overheadToggle) {
+          overheadToggle.disabled = false;
+        }
+        persistState();
+        if (state.autoResults.length) {
+          runAutoAssembly();
+        } else {
+          renderAutoSection();
+        }
+      });
+      overheadToggle?.addEventListener('change', () => {
+        state.autoSettings.includeOverhead = !!overheadToggle.checked;
+        if (state.autoSettings.includeOverhead) {
+          state.autoSettings.includeLabor = true;
+          if (laborToggle && !laborToggle.checked) {
+            laborToggle.checked = true;
+          }
+        }
+        persistState();
+        if (state.autoResults.length) {
+          runAutoAssembly();
+        } else {
+          renderAutoSection();
+        }
+      });
+    }
+
+    /**
+     * Создаёт аккордеоны категорий, пока что с заглушками.
+     */
+    function renderCategoriesSkeleton() {
+      if (!state.index) return;
+      const openIds = new Set(Array.from(categoriesContent.querySelectorAll('details[open]')).map((node) => node.dataset.categoryId));
+      categoriesContent.innerHTML = '';
+      state.index.categories.forEach((cat) => {
+        const filteredOptions = cat.options.filter(optionMatchesFilters);
+        const details = document.createElement('details');
+        details.className = 'category-block';
+        details.dataset.categoryId = cat.id;
+        if (openIds.has(cat.id)) details.open = true;
+        if (!filteredOptions.length) {
+          details.classList.add('no-match');
+        }
+        const summary = document.createElement('summary');
+        summary.textContent = `${cat.name || 'Без имени'} (${filteredOptions.length}/${cat.options.length})`;
+        details.append(summary);
+        const placeholder = document.createElement('div');
+        placeholder.className = 'category-placeholder';
+        placeholder.textContent = filteredOptions.length ? 'Карточки опций загружаются…' : 'Нет опций, подходящих под фильтры.';
+        details.append(placeholder);
+        details.addEventListener('toggle', () => {
+          if (details.open && !details.dataset.loaded) {
+            renderCategory(cat, filteredOptions, details, placeholder);
+            details.dataset.loaded = 'true';
+          }
+        });
+        categoriesContent.append(details);
+        if (details.open && !details.dataset.loaded) {
+          renderCategory(cat, filteredOptions, details, placeholder);
+          details.dataset.loaded = 'true';
+        }
+      });
+      if (!state.index.categories.length) {
+        categoriesContent.innerHTML = '<p>Категории не найдены.</p>';
+      }
+    }
+
+    /**
+     * Применяет фильтры к категориям.
+     */
+    function applyFilters() {
+      renderCategoriesSkeleton();
+      syncOptionCards();
+    }
+
+    /**
+     * Проверяет, проходит ли опция активные фильтры.
+     * @param {any} opt
+     */
+    function optionMatchesFilters(opt) {
+      if (state.filters.categories.size && !state.filters.categories.has(opt.category_id)) {
+        return false;
+      }
+      if (state.filters.tags.size) {
+        const tags = new Set(opt.tags || []);
+        const has = Array.from(state.filters.tags).every((tag) => tags.has(tag));
+        if (!has) return false;
+      }
+      if (state.filters.search) {
+        const haystack = `${opt.name || ''} ${opt.description || ''} ${(opt.tags || []).join(' ')}`.toLowerCase();
+        const needle = state.filters.search.trim().toLowerCase();
+        if (needle && !haystack.includes(needle)) return false;
+      }
+      return true;
+    }
+
+    /**
+     * Обновляет правую панель с текущим состоянием.
+     */
+    function renderSummary() {
+      if (!state.index) return;
+      renderCart();
+      renderInfoPane();
+      renderAutoSection();
+      renderTotalsFooter();
+    }
+
+    /**
+     * Обновляет блок корзины с выбранными опциями.
+     */
+    function renderCart() {
+      if (!state.index) return;
+      cartContent.innerHTML = '';
+      const options = Array.from(state.selection).map((id) => state.index.optionMap.get(id)).filter(Boolean);
+
+      const heading = document.createElement('h3');
+      heading.textContent = options.length ? `Выбрано (${options.length}) — ${modeLabel(state.mode)}` : 'Корзина пуста';
+      cartContent.append(heading);
+
+      if (!options.length) {
+        const hint = document.createElement('p');
+        hint.textContent = 'Добавьте опции в средней колонке, чтобы увидеть расчёты.';
+        cartContent.append(hint);
+        return;
+      }
+
+      const { categories, overall } = calcTotals(options, state.mode);
+
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr><th>Категория</th><th>min</th><th>mid</th><th>max</th></tr>
+        </thead>
+      `;
+      const tbody = document.createElement('tbody');
+      categories.forEach((cat) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${cat.name}</td>
+          <td>${formatCurrency(cat.total.min)}</td>
+          <td>${formatCurrency(cat.total.mid)}</td>
+          <td>${formatCurrency(cat.total.max)}</td>
+        `;
+        tbody.append(row);
+      });
+      const totalRow = document.createElement('tr');
+      totalRow.innerHTML = `
+        <td><strong>Итого</strong></td>
+        <td><strong>${formatCurrency(overall.min)}</strong></td>
+        <td><strong>${formatCurrency(overall.mid)}</strong></td>
+        <td><strong>${formatCurrency(overall.max)}</strong></td>
+      `;
+      tbody.append(totalRow);
+      table.append(tbody);
+      cartContent.append(table);
+
+      categories.forEach((cat) => {
+        const block = document.createElement('div');
+        block.innerHTML = `<strong>${cat.name}</strong>`;
+        const ul = document.createElement('ul');
+        ul.style.margin = '0.4rem 0 0';
+        ul.style.paddingLeft = '1.1rem';
+        cat.options.forEach(({ option, range }) => {
+          const li = document.createElement('li');
+          li.textContent = `${option.name || option.id} — ${formatCurrency(range.mid)} (min ${formatCurrency(range.min)}, max ${formatCurrency(range.max)})`;
+          ul.append(li);
+        });
+        block.append(ul);
+        cartContent.append(block);
+      });
+
+      const conflicts = Array.from(state.conflicts.entries());
+      if (conflicts.length) {
+        const warn = document.createElement('div');
+        warn.style.color = '#e03131';
+        warn.innerHTML = '<strong>Конфликты зависимостей:</strong>';
+        const ul = document.createElement('ul');
+        ul.style.paddingLeft = '1.1rem';
+        conflicts.forEach(([optId, deps]) => {
+          const li = document.createElement('li');
+          const optName = state.index.optionMap.get(optId)?.name || optId;
+          const depsNames = deps.map((depId) => state.index.optionMap.get(depId)?.name || depId);
+          li.textContent = `${optName} требует: ${depsNames.join(', ')}`;
+          ul.append(li);
+        });
+        warn.append(ul);
+        cartContent.append(warn);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'actions-row';
+      const jsonBtn = document.createElement('button');
+      jsonBtn.type = 'button';
+      jsonBtn.className = 'primary-button';
+      jsonBtn.textContent = 'Экспорт JSON';
+      jsonBtn.addEventListener('click', exportConfigJSON);
+      const csvBtn = document.createElement('button');
+      csvBtn.type = 'button';
+      csvBtn.className = 'secondary-button';
+      csvBtn.textContent = 'Экспорт BOM (CSV)';
+      csvBtn.addEventListener('click', exportBOMCSV);
+      const printBtn = document.createElement('button');
+      printBtn.type = 'button';
+      printBtn.className = 'secondary-button';
+      printBtn.textContent = 'Печать / PDF';
+      printBtn.addEventListener('click', printView);
+      actions.append(jsonBtn, csvBtn, printBtn);
+      cartContent.append(actions);
+    }
+
+    /**
+     * Собирает информационные подсказки и источники.
+     */
+    function renderInfoPane() {
+      if (!state.index) return;
+      infoContent.innerHTML = '';
+      const options = Array.from(state.selection).map((id) => state.index.optionMap.get(id)).filter(Boolean);
+
+      const heading = document.createElement('h3');
+      heading.textContent = 'Инфосправка';
+      infoContent.append(heading);
+
+      if (state.data?.geometry) {
+        const geo = document.createElement('div');
+        geo.innerHTML = '<strong>Геометрия объекта</strong>';
+        const list = document.createElement('ul');
+        list.style.paddingLeft = '1.1rem';
+        Object.entries(state.data.geometry).forEach(([key, value]) => {
+          if (value && typeof value === 'object') return;
+          const li = document.createElement('li');
+          li.textContent = `${key}: ${typeof value === 'number' ? value.toFixed(2) : value}`;
+          list.append(li);
+        });
+        geo.append(list);
+        infoContent.append(geo);
+      }
+
+      if (!options.length) {
+        const hint = document.createElement('p');
+        hint.textContent = 'Здесь появятся заметки и источники по выбранным опциям.';
+        infoContent.append(hint);
+        return;
+      }
+
+      const buckets = {
+        efficiency_info: [],
+        noise_info: [],
+        lifespan_maintenance: [],
+        install_notes: [],
+        risks: [],
+      };
+      const sources = [];
+
+      options.forEach((opt) => {
+        Object.keys(buckets).forEach((key) => {
+          const value = opt[key];
+          if (value) {
+            buckets[key].push({ option: opt.name || opt.id, value });
+          }
+        });
+        if (Array.isArray(opt.sources)) {
+          opt.sources.forEach((src) => {
+            sources.push({ option: opt.name || opt.id, ...src });
+          });
+        }
+      });
+
+      const labels = {
+        efficiency_info: 'Энергоэффективность',
+        noise_info: 'Шум',
+        lifespan_maintenance: 'Срок службы и обслуживание',
+        install_notes: 'Монтаж',
+        risks: 'Риски',
+      };
+
+      const infoList = document.createElement('div');
+      infoList.className = 'info-list';
+      Object.entries(buckets).forEach(([key, items]) => {
+        if (!items.length) return;
+        const block = document.createElement('div');
+        block.className = 'info-item';
+        block.innerHTML = `<strong>${labels[key]}</strong>`;
+        const ul = document.createElement('ul');
+        ul.style.margin = '0.3rem 0 0';
+        ul.style.paddingLeft = '1.1rem';
+        items.forEach((item) => {
+          const li = document.createElement('li');
+          li.textContent = `${item.option}: ${normalizeInfoValue(item.value)}`;
+          ul.append(li);
+        });
+        block.append(ul);
+        infoList.append(block);
+      });
+
+      if (infoList.childElementCount) {
+        infoContent.append(infoList);
+      }
+
+      if (sources.length) {
+        const srcBlock = document.createElement('div');
+        srcBlock.className = 'info-item';
+        srcBlock.innerHTML = '<strong>Источники</strong>';
+        const ul = document.createElement('ul');
+        ul.style.margin = '0.3rem 0 0';
+        ul.style.paddingLeft = '1.1rem';
+        sources.forEach((src) => {
+          const li = document.createElement('li');
+          if (src.url) {
+            const link = document.createElement('a');
+            link.href = src.url;
+            link.textContent = src.title || src.url;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            li.append(link);
+          } else {
+            li.textContent = src.title || src.option;
+          }
+          if (src.option) {
+            const span = document.createElement('span');
+            span.textContent = ` — ${src.option}`;
+            li.append(span);
+          }
+          ul.append(li);
+        });
+        srcBlock.append(ul);
+        infoContent.append(srcBlock);
+      }
+    }
+
+    /**
+     * Показывает результаты автоподбора.
+     */
+    function renderAutoSection() {
+      autoContent.innerHTML = '';
+      const heading = document.createElement('h3');
+      heading.textContent = 'Автосборка';
+      autoContent.append(heading);
+
+      if (!state.autoResults.length) {
+        const hint = document.createElement('p');
+        hint.textContent = 'Нажмите «Собрать 3 комплекта», чтобы получить автоматические подборки.';
+        autoContent.append(hint);
+        return;
+      }
+
+      state.autoResults.forEach((preset) => {
+        const block = document.createElement('div');
+        block.className = 'info-item';
+        const budgetLabel = formatCurrency(preset.budget);
+        block.innerHTML = `<strong>${preset.label}</strong> — бюджет до ${budgetLabel}`;
+        const summary = document.createElement('div');
+        summary.style.fontSize = '0.85rem';
+        summary.textContent = `Сумма: ${formatCurrency(preset.total.min)} / ${formatCurrency(preset.total.mid)} / ${formatCurrency(preset.total.max)} (${modeLabel(preset.mode)})`;
+        block.append(summary);
+
+        if (preset.options.length) {
+          const ul = document.createElement('ul');
+          ul.style.margin = '0.4rem 0 0';
+          ul.style.paddingLeft = '1.1rem';
+          preset.options.forEach((opt) => {
+            const li = document.createElement('li');
+            li.textContent = `${opt.name || opt.id}`;
+            ul.append(li);
+          });
+          block.append(ul);
+        }
+
+        if (preset.missing.length) {
+          const warn = document.createElement('div');
+          warn.style.color = '#e03131';
+          warn.style.marginTop = '0.3rem';
+          warn.textContent = `Не удалось подобрать: ${preset.missing.map((item) => item.groupId).join(', ')}`;
+          block.append(warn);
+        }
+
+        const loadBtn = document.createElement('button');
+        loadBtn.type = 'button';
+        loadBtn.className = 'primary-button';
+        loadBtn.textContent = 'Загрузить в корзину';
+        loadBtn.addEventListener('click', () => loadAutoResult(preset));
+        block.append(loadBtn);
+        autoContent.append(block);
+      });
+    }
+
+    /**
+     * Пересчитывает автосборку для трёх бюджетов.
+     */
+    function runAutoAssembly() {
+      if (!state.index) return;
+      const mode = state.autoSettings.includeOverhead
+        ? 'materials_labor_overhead'
+        : state.autoSettings.includeLabor
+          ? 'materials_labor'
+          : 'materials';
+      const strategies = [
+        { label: 'B1', budget: 1_000_000, tags: ['budget', 'manual_install'] },
+        { label: 'B2', budget: 2_000_000, tags: ['high_efficiency', 'durable'] },
+        { label: 'B3', budget: 3_000_000, tags: ['premium', 'durable', 'high_efficiency'] },
+      ];
+      state.autoResults = strategies.map((strategy) => {
+        const result = autoAssemble(strategy.budget, strategy.tags, mode);
+        return { ...strategy, ...result, mode };
+      });
+      renderAutoSection();
+    }
+
+    /**
+     * Итоговая таблица по категориям.
+     */
+    function renderTotalsFooter() {
+      if (!state.index) return;
+      const options = Array.from(state.selection).map((id) => state.index.optionMap.get(id)).filter(Boolean);
+      if (!options.length) {
+        totalsContent.textContent = 'Выберите опции, чтобы увидеть свод.';
+        return;
+      }
+      const { categories, overall } = calcTotals(options, state.mode);
+      const container = document.createElement('div');
+      const description = document.createElement('p');
+      description.textContent = `Режим: ${modeLabel(state.mode)}${state.rounding ? ', округление до рублей' : ''}.`;
+      container.append(description);
+      const table = document.createElement('table');
+      table.innerHTML = '<thead><tr><th>Категория</th><th>min</th><th>mid</th><th>max</th></tr></thead>';
+      const tbody = document.createElement('tbody');
+      categories.forEach((cat) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${cat.name}</td>
+          <td>${formatCurrency(cat.total.min)}</td>
+          <td>${formatCurrency(cat.total.mid)}</td>
+          <td>${formatCurrency(cat.total.max)}</td>
+        `;
+        tbody.append(row);
+      });
+      const totalRow = document.createElement('tr');
+      totalRow.innerHTML = `
+        <td><strong>Итого</strong></td>
+        <td><strong>${formatCurrency(overall.min)}</strong></td>
+        <td><strong>${formatCurrency(overall.mid)}</strong></td>
+        <td><strong>${formatCurrency(overall.max)}</strong></td>
+      `;
+      tbody.append(totalRow);
+      table.append(tbody);
+      container.append(table);
+      totalsContent.innerHTML = '';
+      totalsContent.append(container);
+    }
+
+    /**
+     * Загружает автоподбор в текущую корзину.
+     * @param {{optionIds:string[]}} preset
+     */
+    function loadAutoResult(preset) {
+      state.selection = new Set(preset.optionIds);
+      state.conflicts.clear();
+      persistState();
+      syncOptionCards();
+      renderSummary();
+    }
+
+    /**
+     * Выполняет подбор опций в рамках бюджета.
+     * @param {number} budget
+     * @param {string[]} strategyTags
+     * @param {'materials'|'materials_labor'|'materials_labor_overhead'} mode
+     */
+    function autoAssemble(budget, strategyTags, mode) {
+      const selections = new Map();
+      let total = emptyRange();
+      const missing = [];
+      const groups = Array.from(state.index.groups.entries());
+
+      groups.forEach(([groupId, optionIds]) => {
+        if (optionIds.some((id) => selections.has(id))) {
+          return;
+        }
+        const candidates = optionIds
+          .map((id) => state.index.optionMap.get(id))
+          .filter(Boolean)
+          .filter(optionMatchesFilters);
+        if (!candidates.length) {
+          missing.push({ groupId, reason: 'Нет опций по фильтрам' });
+          return;
+        }
+        const scored = candidates
+          .map((opt) => {
+            const bundle = gatherBundle(opt);
+            return {
+              opt,
+              bundle,
+              score: strategyScore(opt, strategyTags),
+              cost: calcLine(opt, mode),
+            };
+          })
+          .sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.cost.mid - b.cost.mid;
+          });
+
+        let chosen = null;
+        for (const candidate of scored) {
+          let additional = emptyRange();
+          let fits = true;
+          candidate.bundle.forEach((id) => {
+            if (selections.has(id)) return;
+            const depOpt = state.index.optionMap.get(id);
+            if (!depOpt) return;
+            additional = addRanges(additional, calcLine(depOpt, mode));
+          });
+          const projected = addRanges(total, additional);
+          if (projected.mid <= budget) {
+            chosen = candidate;
+            break;
+          }
+        }
+
+        if (!chosen) {
+          missing.push({ groupId, reason: 'Бюджет исчерпан' });
+          return;
+        }
+
+        chosen.bundle.forEach((id) => {
+          const opt = state.index.optionMap.get(id);
+          if (!opt) return;
+          if (!selections.has(id)) {
+            selections.set(id, opt);
+            total = addRanges(total, calcLine(opt, mode));
+          }
+        });
+      });
+
+      const optionIds = Array.from(selections.keys());
+      const options = Array.from(selections.values());
+      return { optionIds, options, total, missing, budget };
+    }
+
+    /**
+     * Собирает зависимые опции.
+     * @param {any} opt
+     */
+    function gatherBundle(opt) {
+      const bundle = new Set([opt.id]);
+      const stack = [opt.id];
+      while (stack.length) {
+        const currentId = stack.pop();
+        const current = state.index.optionMap.get(currentId);
+        if (!current) continue;
+        const deps = Array.isArray(current.dependencies) ? current.dependencies : [];
+        deps.forEach((depId) => {
+          if (!state.index.optionMap.has(depId) || bundle.has(depId)) return;
+          bundle.add(depId);
+          stack.push(depId);
+        });
+      }
+      return bundle;
+    }
+
+    /**
+     * Оценивает опцию по стратегическим тегам.
+     * @param {any} opt
+     * @param {string[]} tags
+     */
+    function strategyScore(opt, tags) {
+      if (!tags.length) return 0;
+      const set = new Set(opt.tags || []);
+      return tags.reduce((acc, tag, index) => {
+        return acc + (set.has(tag) ? tags.length - index : 0);
+      }, 0);
+    }
+
+    /**
+     * Экспорт текущей конфигурации в JSON.
+     */
+    function exportConfigJSON() {
+      const payload = {
+        mode: state.mode,
+        rounding: state.rounding,
+        selection: Array.from(state.selection),
+        timestamp: new Date().toISOString(),
+      };
+      downloadFile('configuration.json', JSON.stringify(payload, null, 2), 'application/json');
+    }
+
+    /**
+     * Экспорт спецификации в CSV.
+     */
+    function exportBOMCSV() {
+      if (!state.index) return;
+      const options = Array.from(state.selection).map((id) => state.index.optionMap.get(id)).filter(Boolean);
+      if (!options.length) {
+        alert('Нет выбранных опций для экспорта.');
+        return;
+      }
+      const header = ['id', 'name', 'category_id', 'qty', 'unit', 'price_basis', 'materials_mid', 'labor_mid', 'subtotal_mid', 'overhead_mid', 'total_mid'];
+      const lines = [header.join(';')];
+      options.forEach((opt) => {
+        const materials = pickRange(opt, 'materials_total') || estimateFromUnit(opt);
+        const labor = pickLaborRange(opt, materials, state.data?.cost_models?.labor?.default_pct ?? 0.3);
+        const subtotal = pickRange(opt, 'subtotal') || addRanges(materials, labor);
+        const total = pickRange(opt, 'total_with_overhead') || scaleRange(subtotal, 1 + (state.data?.overhead_pct ?? 0.1));
+        const overheadAmount = {
+          min: total.min - subtotal.min,
+          mid: total.mid - subtotal.mid,
+          max: total.max - subtotal.max,
+        };
+        const row = [
+          opt.id,
+          opt.name || '',
+          opt.category_id || '',
+          opt.quantity_for_project ?? '',
+          opt.unit || '',
+          opt.price_unit_basis || '',
+          formatNumber(materials.mid),
+          formatNumber(labor.mid),
+          formatNumber(subtotal.mid),
+          formatNumber(overheadAmount.mid),
+          formatNumber(total.mid),
+        ].map((value) => {
+          const str = String(value).replace(/"/g, '""');
+          return /[;"\n]/.test(str) ? `"${str}"` : str;
+        });
+        lines.push(row.join(';'));
+      });
+      downloadFile('bom.csv', lines.join('\n'), 'text/csv');
+    }
+
+    /**
+     * Переход в режим печати.
+     */
+    function printView() {
+      window.print();
+    }
+
+    /**
+     * Сохраняет файл на диск.
+     * @param {string} filename
+     * @param {string} content
+     * @param {string} mime
+     */
+    function downloadFile(filename, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Форматирует число для CSV.
+     * @param {number} value
+     */
+    function formatNumber(value) {
+      if (value == null || Number.isNaN(value)) return '';
+      return Number(value).toFixed(2);
+    }
+
+    /**
+     * Рендерит конкретную категорию, создавая карточки опций.
+     * @param {any} cat
+     * @param {HTMLElement} container
+     * @param {HTMLElement} placeholder
+     */
+    function renderCategory(cat, options, container, placeholder) {
+      placeholder.remove();
+      const wrapper = document.createElement('div');
+      wrapper.className = 'options-grid';
+      if (!options.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'Опции отсутствуют.';
+        wrapper.append(empty);
+      } else {
+        options.forEach((opt) => {
+          wrapper.append(renderOptionCard(opt));
+        });
+      }
+      container.append(wrapper);
+    }
+
+    /**
+     * Создаёт карточку опции с основной информацией.
+     * @param {any} opt
+     */
+    function renderOptionCard(opt) {
+      const article = document.createElement('article');
+      article.className = 'option-card';
+      article.dataset.optionId = opt.id;
+
+      const header = document.createElement('header');
+      const title = document.createElement('h3');
+      title.textContent = opt.name || opt.id;
+      const unitInfo = document.createElement('div');
+      unitInfo.className = 'option-meta';
+      const quantity = typeof opt.quantity_for_project === 'number'
+        ? `${opt.quantity_for_project} ${opt.unit || ''}`.trim()
+        : opt.unit || '—';
+      unitInfo.textContent = `${quantity}${opt.how_to_scale ? ` · ${opt.how_to_scale}` : ''}`;
+      header.append(title, unitInfo);
+
+      const description = document.createElement('p');
+      description.className = 'option-description';
+      description.textContent = opt.description || 'Описание отсутствует.';
+
+      const priceTable = document.createElement('div');
+      priceTable.className = 'price-table';
+
+      const badges = document.createElement('div');
+      badges.className = 'badge-row';
+      (opt.tags || []).forEach((tag) => {
+        const span = document.createElement('span');
+        span.className = 'badge';
+        span.textContent = tag;
+        badges.append(span);
+      });
+
+      const actions = document.createElement('div');
+      actions.className = 'option-actions';
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.addEventListener('click', () => {
+        toggleOption(opt.id);
+      });
+      actions.append(toggleBtn);
+
+      article.append(header, description, priceTable);
+      if (badges.childElementCount) {
+        article.append(badges);
+      }
+      article.append(actions);
+      if (opt.completeness && opt.completeness !== 'full') {
+        const warn = document.createElement('div');
+        warn.className = 'completeness-warning';
+        warn.textContent = `Данные неполные: ${opt.completeness}`;
+        article.append(warn);
+      }
+
+      updateOptionCardState(article, opt);
+      return article;
+    }
+
+    /**
+     * Обновляет отображение карточки в соответствии с состоянием.
+     * @param {HTMLElement} article
+     * @param {any} opt
+     */
+    function updateOptionCardState(article, opt) {
+      const selected = state.selection.has(opt.id);
+      article.classList.toggle('selected', selected);
+      const conflict = state.conflicts.has(opt.id);
+      article.classList.toggle('conflict', conflict);
+
+      const priceTable = article.querySelector('.price-table');
+      const priceLine = calcLine(opt, state.mode);
+      if (priceTable) {
+        priceTable.innerHTML = `
+          <div><strong>min</strong>${formatCurrency(priceLine.min)}</div>
+          <div><strong>mid</strong>${formatCurrency(priceLine.mid)}</div>
+          <div><strong>max</strong>${formatCurrency(priceLine.max)}</div>
+        `;
+      }
+
+      const toggleBtn = article.querySelector('.option-actions button');
+      if (toggleBtn) {
+        toggleBtn.textContent = selected ? 'Убрать' : 'Добавить';
+        toggleBtn.classList.toggle('secondary', selected);
+      }
+    }
+
+    /**
+     * Добавляет или убирает опцию, учитывая ограничения и зависимости.
+     * @param {string} optionId
+     */
+    async function toggleOption(optionId) {
+      if (!state.index) return;
+      const opt = state.index.optionMap.get(optionId);
+      if (!opt) return;
+      const selected = state.selection.has(optionId);
+      if (selected) {
+        state.selection.delete(optionId);
+        state.conflicts.delete(optionId);
+      } else {
+        applyConstraint(opt);
+        state.selection.add(optionId);
+        const ok = await ensureDependencies(opt, new Set([optionId]));
+        if (!ok) {
+          state.conflicts.set(optionId, collectMissingDependencies(opt));
+        } else {
+          state.conflicts.delete(optionId);
+        }
+      }
+      persistState();
+      syncOptionCards();
+      renderSummary();
+    }
+
+    /**
+     * Радио-поведение для mutually_exclusive_group.
+     * @param {any} opt
+     */
+    function applyConstraint(opt) {
+      if (!opt.mutually_exclusive_group || !state.index) return;
+      const group = state.index.groups.get(opt.mutually_exclusive_group);
+      if (!group) return;
+      group.forEach((id) => {
+        if (id !== opt.id && state.selection.has(id)) {
+          state.selection.delete(id);
+          state.conflicts.delete(id);
+        }
+      });
+    }
+
+    /**
+     * Показывает модальное подтверждение, совместимое с клавиатурой.
+     * @param {{title?:string,message:string,confirmText?:string,cancelText?:string}} options
+     * @returns {Promise<boolean>}
+     */
+    function showConfirm({
+      title = 'Требуются зависимости',
+      message,
+      confirmText = 'Добавить',
+      cancelText = 'Оставить без изменений',
+    }) {
+      if (!dialogEl || typeof dialogEl.showModal !== 'function') {
+        return Promise.resolve(window.confirm(message));
+      }
+      return new Promise((resolve) => {
+        const previousActive = document.activeElement;
+        dialogEl.innerHTML = '';
+        const titleEl = document.createElement('h3');
+        titleEl.textContent = title;
+        const messageEl = document.createElement('p');
+        messageEl.textContent = message;
+        const actions = document.createElement('div');
+        actions.className = 'dialog-actions';
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'secondary-button';
+        cancelBtn.dataset.action = 'cancel';
+        cancelBtn.textContent = cancelText;
+        const confirmBtn = document.createElement('button');
+        confirmBtn.type = 'button';
+        confirmBtn.className = 'primary-button';
+        confirmBtn.dataset.action = 'confirm';
+        confirmBtn.textContent = confirmText;
+        actions.append(cancelBtn, confirmBtn);
+        dialogEl.append(titleEl, messageEl, actions);
+
+        const cleanup = (result) => {
+          dialogEl.close();
+          if (previousActive instanceof HTMLElement) {
+            previousActive.focus();
+          }
+          resolve(result);
+        };
+
+        const handleCancel = (event) => {
+          event.preventDefault();
+          cleanup(false);
+        };
+
+        dialogEl.addEventListener('cancel', handleCancel, { once: true });
+        cancelBtn.addEventListener('click', handleCancel, { once: true });
+        confirmBtn.addEventListener(
+          'click',
+          (event) => {
+            event.preventDefault();
+            cleanup(true);
+          },
+          { once: true },
+        );
+
+        dialogEl.showModal();
+        confirmBtn.focus();
+      });
+    }
+
+    /**
+     * Обрабатывает зависимости опции.
+     * @param {any} opt
+     * @param {Set<string>} trail
+     */
+    async function ensureDependencies(opt, trail) {
+      const missing = collectMissingDependencies(opt);
+      if (!missing.length) return true;
+      const names = missing.map((id) => state.index.optionMap.get(id)?.name || id).join(', ');
+      const confirmed = await showConfirm({
+        message: `Опция «${opt.name || opt.id}» требует: ${names}. Добавить автоматически?`,
+      });
+      if (!confirmed) return false;
+      missing.forEach((depId) => {
+        addOptionWithDependencies(depId, trail);
+      });
+      return true;
+    }
+
+    /**
+     * Собирает отсутствующие зависимости для опции.
+     * @param {any} opt
+     */
+    function collectMissingDependencies(opt) {
+      if (!Array.isArray(opt.dependencies) || !opt.dependencies.length) return [];
+      return opt.dependencies.filter((depId) => !state.selection.has(depId) && state.index.optionMap.has(depId));
+    }
+
+    /**
+     * Рекурсивно добавляет опцию и её зависимости без повторного подтверждения.
+     * @param {string} optionId
+     * @param {Set<string>} trail
+     */
+    function addOptionWithDependencies(optionId, trail) {
+      if (trail.has(optionId)) return;
+      trail.add(optionId);
+      const opt = state.index.optionMap.get(optionId);
+      if (!opt) return;
+      applyConstraint(opt);
+      state.selection.add(optionId);
+      const missing = collectMissingDependencies(opt);
+      missing.forEach((depId) => addOptionWithDependencies(depId, trail));
+      state.conflicts.delete(optionId);
+    }
+
+    /**
+     * Перерисовывает все карточки согласно текущему состоянию.
+     */
+    function syncOptionCards() {
+      document.querySelectorAll('.option-card').forEach((card) => {
+        const id = card.dataset.optionId;
+        if (!id) return;
+        const opt = state.index?.optionMap.get(id);
+        if (!opt) return;
+        updateOptionCardState(card, opt);
+      });
+    }
+
+    /**
+     * Рассчитывает суммарные значения по категориям и общий итог.
+     * @param {any[]} options
+     * @param {'materials'|'materials_labor'|'materials_labor_overhead'} mode
+     */
+    function calcTotals(options, mode) {
+      const categories = new Map();
+      let overall = emptyRange();
+      options.forEach((opt) => {
+        const line = calcLine(opt, mode);
+        overall = addRanges(overall, line);
+        const catId = opt.category_id;
+        const existing = categories.get(catId) || {
+          id: catId,
+          name: state.index?.categories.find((cat) => cat.id === catId)?.name || catId,
+          total: emptyRange(),
+          options: [],
+        };
+        existing.total = addRanges(existing.total, line);
+        existing.options.push({ option: opt, range: line });
+        categories.set(catId, existing);
+      });
+      const sorted = Array.from(categories.values()).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ru'));
+      return { categories: sorted, overall };
+    }
+
+    /**
+     * Возвращает диапазоны цен по выбранному режиму.
+     * @param {any} opt
+     * @param {'materials'|'materials_labor'|'materials_labor_overhead'} mode
+     */
+    function calcLine(opt, mode) {
+      const overheadPct = state.data?.overhead_pct ?? 0.1;
+      const defaultLaborPct = state.data?.cost_models?.labor?.default_pct ?? 0.3;
+      const materials = pickRange(opt, 'materials_total') || estimateFromUnit(opt);
+      const labor = pickLaborRange(opt, materials, defaultLaborPct);
+      const subtotal = pickRange(opt, 'subtotal') || addRanges(materials, labor);
+      const totalWithOverhead = pickRange(opt, 'total_with_overhead') || scaleRange(subtotal, 1 + overheadPct);
+
+      switch (mode) {
+        case 'materials_labor':
+          return subtotal;
+        case 'materials_labor_overhead':
+          return totalWithOverhead;
+        default:
+          return materials;
+      }
+    }
+
+    /**
+     * Пустой диапазон значений.
+     */
+    function emptyRange() {
+      return { min: 0, mid: 0, max: 0 };
+    }
+
+    /**
+     * Форматирует число в валюту с учётом округления.
+     * @param {number|null|undefined} value
+     */
+    function formatCurrency(value) {
+      if (value == null || Number.isNaN(value)) return '—';
+      const digits = state.rounding ? 0 : 2;
+      return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        maximumFractionDigits: digits,
+        minimumFractionDigits: digits,
+      }).format(value);
+    }
+
+    /**
+     * Берёт диапазон *_min/_mid/_max, если доступен.
+     * @param {any} obj
+     * @param {string} prefix
+     */
+    function pickRange(obj, prefix) {
+      const min = obj?.[`${prefix}_min_rub`];
+      const mid = obj?.[`${prefix}_mid_rub`];
+      const max = obj?.[`${prefix}_max_rub`];
+      if ([min, mid, max].every((v) => typeof v === 'number')) {
+        return { min, mid, max };
+      }
+      return null;
+    }
+
+    /**
+     * Пытается оценить материалы из цены и количества.
+     * @param {any} opt
+     */
+    function estimateFromUnit(opt) {
+      const price = pickRange(opt, 'price');
+      if (!price) return { min: 0, mid: 0, max: 0 };
+      const quantity = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : 1;
+      return scaleRange(price, quantity);
+    }
+
+    /**
+     * Получает диапазон стоимости работ.
+     * @param {any} opt
+     * @param {{min:number,mid:number,max:number}} materials
+     * @param {number} defaultPct
+     */
+    function pickLaborRange(opt, materials, defaultPct) {
+      if (opt.labor) {
+        const labor = pickRange(opt.labor, 'labor_total');
+        if (labor) return labor;
+        const param = typeof opt.labor.param === 'number' ? opt.labor.param : defaultPct;
+        return scaleRange(materials, param);
+      }
+      return scaleRange(materials, defaultPct);
+    }
+
+    /**
+     * Приводит значение информационного поля к строке.
+     * @param {any} value
+     */
+    function normalizeInfoValue(value) {
+      if (value == null) return '';
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        return String(value);
+      }
+      if (Array.isArray(value)) {
+        return value.map((item) => normalizeInfoValue(item)).join('; ');
+      }
+      if (typeof value === 'object') {
+        return Object.entries(value)
+          .map(([key, val]) => `${key}: ${normalizeInfoValue(val)}`)
+          .join(', ');
+      }
+      return String(value);
+    }
+
+    /**
+     * Складывает два диапазона.
+     * @param {{min:number,mid:number,max:number}} a
+     * @param {{min:number,mid:number,max:number}} b
+     */
+    function addRanges(a, b) {
+      return {
+        min: (a?.min || 0) + (b?.min || 0),
+        mid: (a?.mid || 0) + (b?.mid || 0),
+        max: (a?.max || 0) + (b?.max || 0),
+      };
+    }
+
+    /**
+     * Масштабирует диапазон на коэффициент.
+     * @param {{min:number,mid:number,max:number}} range
+     * @param {number} factor
+     */
+    function scaleRange(range, factor) {
+      return {
+        min: (range?.min || 0) * factor,
+        mid: (range?.mid || 0) * factor,
+        max: (range?.max || 0) * factor,
+      };
+    }
+
+    /**
+     * Формирует вспомогательные структуры: список категорий, тегов, карт опций.
+     * @param {any} data
+     */
+    function buildIndex(data) {
+      const categories = Array.isArray(data.categories) ? data.categories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        options: Array.isArray(cat.options) ? cat.options : [],
+      })) : [];
+      const optionMap = new Map();
+      const groups = new Map();
+      const tags = new Set();
+
+      categories.forEach((cat) => {
+        cat.options.forEach((opt) => {
+          optionMap.set(opt.id, { ...opt, category_id: opt.category_id || cat.id });
+          if (Array.isArray(opt.tags)) opt.tags.forEach((tag) => tags.add(tag));
+          if (opt.mutually_exclusive_group) {
+            const group = groups.get(opt.mutually_exclusive_group) || [];
+            group.push(opt.id);
+            groups.set(opt.mutually_exclusive_group, group);
+          }
+        });
+      });
+
+      return {
+        categories,
+        options: Array.from(optionMap.values()),
+        optionMap,
+        groups,
+        tags: Array.from(tags).sort(),
+      };
+    }
+
+    /**
+     * Восстанавливает сохранённое состояние, если оно есть.
+     */
+    function restoreState() {
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.selection)) {
+          state.selection = new Set(parsed.selection.filter((id) => state.index.optionMap.has(id)));
+        }
+        if (parsed.mode === 'materials' || parsed.mode === 'materials_labor' || parsed.mode === 'materials_labor_overhead') {
+          state.mode = parsed.mode;
+        }
+        if (typeof parsed.rounding === 'boolean') {
+          state.rounding = parsed.rounding;
+        }
+        if (parsed.filters) {
+          if (Array.isArray(parsed.filters.categories)) {
+            state.filters.categories = new Set(parsed.filters.categories.filter((id) => state.index.categories.some((cat) => cat.id === id)));
+          }
+          if (Array.isArray(parsed.filters.tags)) {
+            state.filters.tags = new Set(parsed.filters.tags.filter((tag) => state.index.tags.includes(tag)));
+          }
+          if (typeof parsed.filters.search === 'string') {
+            state.filters.search = parsed.filters.search;
+          }
+        }
+        if (parsed.autoSettings) {
+          state.autoSettings.includeLabor = !!parsed.autoSettings.includeLabor;
+          state.autoSettings.includeOverhead = !!parsed.autoSettings.includeOverhead;
+        }
+      } catch (error) {
+        console.warn('Не удалось восстановить сохранённое состояние:', error);
+      }
+    }
+
+    /**
+     * Сохраняет актуальное состояние в localStorage.
+     */
+    function persistState() {
+      try {
+        const payload = {
+          selection: Array.from(state.selection),
+          mode: state.mode,
+          rounding: state.rounding,
+          filters: {
+            categories: Array.from(state.filters.categories),
+            tags: Array.from(state.filters.tags),
+            search: state.filters.search,
+          },
+          autoSettings: { ...state.autoSettings },
+        };
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (error) {
+        console.warn('Не удалось сохранить состояние:', error);
+      }
+    }
+
+    /**
+     * Читабельное имя режима расчёта.
+     * @param {string} mode
+     */
+    function modeLabel(mode) {
+      switch (mode) {
+        case 'materials_labor':
+          return 'Материалы + работы';
+        case 'materials_labor_overhead':
+          return 'Материалы + работы + накладные';
+        default:
+          return 'Материалы';
+      }
+    }
+
+    /**
+     * Создаёт fallback-интерфейс для ручной загрузки файла.
+     */
+    function enableFallback() {
+      if (state.fallbackEnabled) return;
+      state.fallbackEnabled = true;
+      updateStatus('Загрузка через fetch не удалась. Используйте загрузку файла.');
+      const wrapper = document.createElement('div');
+      wrapper.id = 'fallback';
+      wrapper.innerHTML = `
+        <p>Перетащите файл <code>data.json</code> сюда или выберите через диалог.</p>
+        <input type="file" id="file-input" accept="application/json,.json,.txt,.html">
+      `;
+      filtersContent.innerHTML = '';
+      filtersContent.append(wrapper);
+
+      const fileInput = wrapper.querySelector('#file-input');
+      fileInput.addEventListener('change', (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+          readFile(file);
+        }
+      });
+
+      ['dragenter', 'dragover'].forEach((eventName) => {
+        wrapper.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          wrapper.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach((eventName) => {
+        wrapper.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (eventName === 'drop') {
+            const file = event.dataTransfer?.files?.[0];
+            if (file) readFile(file);
+          }
+          wrapper.classList.remove('dragover');
+        });
+      });
+    }
+
+    /**
+     * Читает файл и передаёт текст в обработчик.
+     * @param {File} file
+     */
+    function readFile(file) {
+      updateStatus(`Читаю ${file.name}…`);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = /** @type {string} */ (reader.result || '');
+        handleDataText(text);
+      };
+      reader.onerror = () => {
+        console.error('FileReader error:', reader.error);
+        updateStatus('Ошибка чтения файла');
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    /**
+     * Готовит структуру проекта, поднимая ключи из metadata.
+     * @param {any} data
+     */
+    function normalizeProjectData(data) {
+      if (!data || typeof data !== 'object') return data;
+      const normalized = { ...data };
+      const meta = data.metadata && typeof data.metadata === 'object' ? data.metadata : null;
+      if (meta) {
+        if (meta.geometry && !normalized.geometry) {
+          normalized.geometry = meta.geometry;
+        }
+        if (meta.cost_models && !normalized.cost_models) {
+          normalized.cost_models = meta.cost_models;
+        }
+        if (typeof meta.overhead_pct === 'number' && normalized.overhead_pct == null) {
+          normalized.overhead_pct = meta.overhead_pct;
+        }
+        if (meta.notes && normalized.notes == null) {
+          normalized.notes = meta.notes;
+        }
+      }
+      return normalized;
+    }
+
+    /**
+     * Удаляет HTML-обёртку, возвращая JSON-строку.
+     * @param {string} text
+     */
+    function stripHtmlToJson(text) {
+      const trimmed = text.trim();
+      if (!trimmed.startsWith('<')) return text;
+
+      let extracted = trimmed;
+      if (typeof DOMParser !== 'undefined') {
+        try {
+          const doc = new DOMParser().parseFromString(trimmed, 'text/html');
+          extracted = doc?.body?.textContent ?? trimmed;
+        } catch (error) {
+          console.warn('DOMParser parsing failed, fallback to regex cleanup.', error);
+        }
+      }
+
+      if (extracted === trimmed) {
+        extracted = trimmed
+          .replace(/<style[\s\S]*?<\/style>/gi, '')
+          .replace(/<script[\s\S]*?<\/script>/gi, '')
+          .replace(/<[^>]+>/g, '\n');
+      }
+
+      return extracted
+        .replace(/\u00a0|&nbsp;|&#160;/g, ' ')
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/\r/g, '')
+        .split('\n')
+        .map((line) => line.trimEnd())
+        .filter((line, index, array) => {
+          if (line.trim() === '') {
+            return index > 0 && array[index - 1].trim() !== '';
+          }
+          return true;
+        })
+        .join('\n')
+        .trim();
+    }
+
+    /**
+     * Проверяет структуру данных, возвращая список предупреждений.
+     * @param {any} data
+     */
+    function validateData(data) {
+      const warnings = [];
+      if (!data || typeof data !== 'object') {
+        warnings.push('Данные не являются объектом.');
+        return { valid: false, warnings };
+      }
+      const requiredTop = ['geometry', 'cost_models', 'overhead_pct'];
+      requiredTop.forEach((key) => {
+        if (!(key in data)) warnings.push(`Отсутствует ключ ${key}.`);
+      });
+      if (!Array.isArray(data.categories) || !data.categories.length) {
+        warnings.push('Массив categories отсутствует или пуст.');
+      }
+      return { valid: warnings.length === 0, warnings };
+    }
+
+    /**
+     * Показывает список предупреждений под статусом.
+     */
+    function renderWarnings() {
+      let list = document.getElementById('warnings');
+      if (!list) {
+        list = document.createElement('ul');
+        list.id = 'warnings';
+        statusEl.insertAdjacentElement('afterend', list);
+      }
+      list.innerHTML = '';
+      state.warnings.forEach((warn) => {
+        const li = document.createElement('li');
+        li.textContent = warn;
+        list.appendChild(li);
+      });
+      list.classList.toggle('hidden', state.warnings.length === 0);
+    }
+  </script>
+</body>
+</html>
