@@ -1,0 +1,241 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2024-06-01T00:00:00Z",
+  "currency": "RUB",
+  "region": "RU-MOW",
+  "metadata": {
+    "project": {
+      "name": "Шаблон конфигуратора",
+      "climate_zone": "Москва",
+      "winter_design_temperature_c": -26,
+      "summer_design_temperature_c": 28
+    },
+    "notes": "Используйте шаблон для расширения базы. Все суммы указаны в рублях.",
+    "geometry": {
+      "floor_area_m2": 30.0,
+      "roof_area_m2": 30.02,
+      "ext_walls_area_m2": 67.35,
+      "int_partitions_area_m2": 10.8,
+      "openings_area_m2": 5.25,
+      "toilet_ceiling_area_m2": 2.25,
+      "mezzanine_top_area_m2": 2.25
+    }
+  },
+  "geometry": {
+    "floor_area_m2": 30.0,
+    "roof_area_m2": 30.02,
+    "ext_walls_area_m2": 67.35,
+    "int_partitions_area_m2": 10.8,
+    "openings_area_m2": 5.25,
+    "toilet_ceiling_area_m2": 2.25,
+    "mezzanine_top_area_m2": 2.25
+  },
+  "cost_models": {
+    "labor": {
+      "default_pct": 0.3
+    }
+  },
+  "overhead_pct": 0.1,
+  "categories": [
+    {
+      "id": "foundation",
+      "name": "Фундамент",
+      "options": [
+        {
+          "id": "foundation_screw_piles",
+          "category_id": "foundation",
+          "name": "Свайно-винтовой фундамент 108 мм",
+          "description": "Промышленный монтаж свай Ø108 мм с оголовками и огнезащитой.",
+          "unit": "м²",
+          "how_to_scale": "1 комплект свай на каждый квадратный метр пола",
+          "price_unit_basis": "1 kit",
+          "quantity_for_project": 30,
+          "scaling": {
+            "geometry_key": "floor_area_m2",
+            "method": "area",
+            "label": "площади пола"
+          },
+          "materials_total_min_rub": 165000,
+          "materials_total_mid_rub": 180000,
+          "materials_total_max_rub": 210000,
+          "labor": {
+            "model": "contractor",
+            "param": "crew_install",
+            "labor_total_min_rub": 45000,
+            "labor_total_mid_rub": 54000,
+            "labor_total_max_rub": 63000
+          },
+          "subtotal_min_rub": 210000,
+          "subtotal_mid_rub": 234000,
+          "subtotal_max_rub": 273000,
+          "total_with_overhead_min_rub": 231000,
+          "total_with_overhead_mid_rub": 257400,
+          "total_with_overhead_max_rub": 300300,
+          "tags": [
+            "budget",
+            "manual_install"
+          ],
+          "mutually_exclusive_group": "foundation_system",
+          "dependencies": [],
+          "default_selected": true,
+          "sources": [
+            {
+              "title": "Коммерческое предложение подрядчика",
+              "url": "https://example.com/foundation-offer"
+            }
+          ],
+          "completeness": "full",
+          "last_updated": "2024-05-25"
+        },
+        {
+          "id": "foundation_slab_insulated",
+          "category_id": "foundation",
+          "name": "Утеплённая шведская плита",
+          "description": "Монолитная плита с утеплением, инженерными закладными и разводкой тёплого пола.",
+          "unit": "м²",
+          "how_to_scale": "рассчитывать по площади пола",
+          "price_unit_basis": "1 м² плиты",
+          "quantity_for_project": 30,
+          "scaling": {
+            "geometry_key": "floor_area_m2",
+            "method": "area",
+            "label": "площади пола"
+          },
+          "materials_total_min_rub": 420000,
+          "materials_total_mid_rub": 465000,
+          "materials_total_max_rub": 525000,
+          "labor": {
+            "model": "contractor",
+            "param": "full_cycle",
+            "labor_total_min_rub": 95000,
+            "labor_total_mid_rub": 108000,
+            "labor_total_max_rub": 126000
+          },
+          "subtotal_min_rub": 515000,
+          "subtotal_mid_rub": 573000,
+          "subtotal_max_rub": 651000,
+          "total_with_overhead_min_rub": 566500,
+          "total_with_overhead_mid_rub": 630300,
+          "total_with_overhead_max_rub": 716100,
+          "tags": [
+            "premium",
+            "durable",
+            "high_efficiency"
+          ],
+          "mutually_exclusive_group": "foundation_system",
+          "dependencies": [],
+          "default_selected": false,
+          "sources": [
+            {
+              "title": "Прайс проектной организации",
+              "url": "https://example.com/slab"
+            }
+          ],
+          "completeness": "full",
+          "last_updated": "2024-05-25"
+        }
+      ]
+    },
+    {
+      "id": "envelope",
+      "name": "Ограждающие конструкции",
+      "options": [
+        {
+          "id": "envelope_sip_panels",
+          "category_id": "envelope",
+          "name": "Стены из SIP-панелей 174 мм",
+          "description": "Комплект стен и перекрытий из SIP-панелей с заводским раскроем.",
+          "unit": "м²",
+          "how_to_scale": "1 комплект SIP на каждый квадратный метр наружных стен",
+          "price_unit_basis": "1 м² SIP панели",
+          "quantity_for_project": 67.35,
+          "scaling": {
+            "geometry_key": "ext_walls_area_m2",
+            "method": "area",
+            "label": "площади наружных стен",
+            "note": "Раскрой панелей корректируется вручную под каждую компоновку."
+          },
+          "materials_total_min_rub": 520000,
+          "materials_total_mid_rub": 565000,
+          "materials_total_max_rub": 620000,
+          "labor": {
+            "model": "crew",
+            "param": "sip_team",
+            "labor_total_min_rub": 110000,
+            "labor_total_mid_rub": 128000,
+            "labor_total_max_rub": 145000
+          },
+          "subtotal_min_rub": 630000,
+          "subtotal_mid_rub": 693000,
+          "subtotal_max_rub": 765000,
+          "total_with_overhead_min_rub": 693000,
+          "total_with_overhead_mid_rub": 762300,
+          "total_with_overhead_max_rub": 841500,
+          "tags": [
+            "fast_install",
+            "high_efficiency"
+          ],
+          "mutually_exclusive_group": "envelope_system",
+          "dependencies": [
+            "foundation_screw_piles"
+          ],
+          "default_selected": true,
+          "sources": [
+            {
+              "title": "Каталог SIP-панелей",
+              "url": "https://example.com/sip"
+            }
+          ],
+          "completeness": "full",
+          "last_updated": "2024-05-24"
+        },
+        {
+          "id": "envelope_mineral_wool_frame",
+          "category_id": "envelope",
+          "name": "Каркас с утеплением минеральной ватой",
+          "description": "Деревянный каркас с базальтовой ватой 200 мм, ветровлагозащитой и внутренней отделкой OSB.",
+          "unit": "м²",
+          "price_unit_basis": "1 м² каркаса",
+          "quantity_for_project": 67.35,
+          "scaling": {
+            "geometry_key": "ext_walls_area_m2",
+            "method": "area",
+            "label": "площади наружных стен"
+          },
+          "materials_total_min_rub": 430000,
+          "materials_total_mid_rub": 468000,
+          "materials_total_max_rub": 510000,
+          "labor": {
+            "model": "contractor",
+            "param": "framing_team",
+            "labor_total_min_rub": 105000,
+            "labor_total_mid_rub": 119000,
+            "labor_total_max_rub": 136000
+          },
+          "subtotal_min_rub": 535000,
+          "subtotal_mid_rub": 587000,
+          "subtotal_max_rub": 646000,
+          "total_with_overhead_min_rub": 588500,
+          "total_with_overhead_mid_rub": 645700,
+          "total_with_overhead_max_rub": 710600,
+          "tags": [
+            "budget",
+            "manual_install",
+            "durable"
+          ],
+          "mutually_exclusive_group": "envelope_system",
+          "dependencies": [],
+          "default_selected": false,
+          "sources": [
+            {
+              "title": "Смета подрядчика",
+              "url": "https://example.com/frame"
+            }
+          ],
+          "completeness": "full",
+          "last_updated": "2024-05-24"
+        }
+      ]
+    }
+  ]
+}
