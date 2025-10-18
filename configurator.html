@@ -109,10 +109,16 @@
       min-height: 0;
     }
 
-    .panel h2 {
+    .panel > h2 {
       margin-top: 0;
       margin-bottom: 0.75rem;
       font-size: 1.15rem;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: var(--panel-gradient);
+      padding-block: 0.6rem;
+      border-bottom: 1px solid rgba(13, 110, 139, 0.12);
     }
 
     #filters-panel,
@@ -349,6 +355,11 @@
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 248, 252, 0.92) 100%);
       display: grid;
       gap: 0.55rem;
+      transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    }
+
+    .option-card:hover {
+      transform: translateY(-1px);
     }
 
     .option-card.selected {
@@ -370,6 +381,16 @@
     .option-card h3 {
       margin: 0;
       font-size: 1.05rem;
+    }
+
+    .option-badge-updated {
+      background: rgba(217, 72, 15, 0.12);
+      color: #d9480f;
+      border: 1px solid rgba(217, 72, 15, 0.32);
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
     }
 
     .option-meta {
@@ -421,6 +442,7 @@
       font-size: 0.9rem;
       line-height: 1.45;
       word-break: break-word;
+      hyphens: auto;
     }
 
     .badge-row {
@@ -451,6 +473,19 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.35rem;
       font-size: 0.85rem;
+    }
+
+    .cart-table,
+    .summary-section table,
+    .price-table,
+    .cart-item-amount {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .price-table div,
+    .cart-table td,
+    .summary-section td {
+      font-feature-settings: "tnum" 1, "ss01" 1;
     }
 
     .price-table div {
@@ -533,11 +568,37 @@
       background: rgba(224, 247, 250, 0.9);
     }
 
+    .primary-button:focus-visible,
+    .secondary-button:focus-visible,
+    .option-actions button:focus-visible,
+    .cart-remove:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(21, 170, 191, 0.35);
+    }
+
     .actions-row {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
       margin-top: 1rem;
+    }
+
+    #cost-mode-switch {
+      margin-top: 0.35rem;
+      margin-bottom: 1rem;
+      gap: 0.4rem;
+      justify-content: flex-start;
+    }
+
+    #cost-mode-switch .secondary-button {
+      flex: 1 1 140px;
+      justify-content: center;
+    }
+
+    #cost-mode-switch .secondary-button[aria-pressed="true"] {
+      background: linear-gradient(135deg, var(--accent-strong) 0%, #1cb5c9 100%);
+      color: #fff;
+      border-color: rgba(11, 114, 133, 0.9);
     }
 
     .cart-table {
@@ -800,6 +861,7 @@
       font-weight: 600;
       font-size: 0.9rem;
       line-height: 1.35;
+      hyphens: auto;
     }
 
     .cart-remove {
@@ -840,6 +902,7 @@
     .cart-item-amount small {
       color: #6b7280;
       font-size: 0.75rem;
+      opacity: 0.85;
     }
 
     .cart-item-quantity {
@@ -889,6 +952,7 @@
       padding: 0.6rem 0.75rem;
       background: rgba(255, 255, 255, 0.7);
       overflow-wrap: anywhere;
+      hyphens: auto;
     }
 
     .info-item strong {
@@ -951,6 +1015,9 @@
       padding: 2rem 2.5rem 2.5rem;
       background: linear-gradient(180deg, rgba(235, 248, 252, 0.95) 0%, rgba(255, 255, 255, 0.98) 60%);
       border-top: 1px solid rgba(13, 110, 139, 0.15);
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
     }
 
     #totals-content {
@@ -977,6 +1044,12 @@
       margin: 0;
       font-size: 0.92rem;
       color: #0c4a6e;
+    }
+
+    .totals-note {
+      margin-bottom: 0.35rem;
+      font-size: 0.85rem;
+      color: #475569;
     }
 
     #totals-content th,
@@ -1029,6 +1102,7 @@
       }
       #totals-footer {
         border-top: none;
+        position: static;
       }
     }
 
@@ -1055,6 +1129,40 @@
     .hidden {
       display: none !important;
     }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e6eef6;
+        --border: #233043;
+        --panel-gradient: linear-gradient(135deg, rgba(18, 25, 38, 0.95) 0%, rgba(14, 22, 35, 0.9) 100%);
+        --page-gradient: linear-gradient(180deg, #0a1522 0%, #0e1b2a 38%, #101826 100%);
+      }
+
+      body {
+        color: var(--fg);
+      }
+
+      .panel,
+      .cart-item,
+      .info-item,
+      .summary-section,
+      .cart-table,
+      #totals-content {
+        background: rgba(14, 22, 35, 0.75);
+        border-color: rgba(15, 111, 139, 0.22);
+      }
+
+      .cart-category,
+      .cart-category-total,
+      .cart-item-amount strong {
+        color: #9bd5e0;
+      }
+
+      header {
+        box-shadow: 0 18px 36px rgba(12, 133, 153, 0.35);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1074,6 +1182,11 @@
     </section>
     <section id="categories-panel" class="panel" aria-label="Категории и опции">
       <h2>Опции</h2>
+      <div class="actions-row" id="cost-mode-switch" role="group" aria-label="Режим стоимости">
+        <button type="button" class="secondary-button" data-mode="materials">Материалы</button>
+        <button type="button" class="secondary-button" data-mode="materials_labor">Материалы+работы</button>
+        <button type="button" class="secondary-button" data-mode="materials_labor_overhead">С накладными</button>
+      </div>
       <div id="categories-content" class="scrollable">Нет данных для отображения.</div>
     </section>
     <section id="summary-panel" class="panel" aria-label="Корзина и сводка">
@@ -1170,6 +1283,7 @@
     const infoContent = document.getElementById('info-section');
     const autoContent = document.getElementById('auto-section');
     const totalsContent = document.getElementById('totals-content');
+    const modeSwitchEl = document.getElementById('cost-mode-switch');
     const dialogEl = document.getElementById('dialog');
     const dataDialogEl = document.getElementById('data-merge-dialog');
     const dataFormEl = document.getElementById('data-merge-form');
@@ -1181,6 +1295,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       setupDataMergeUI();
+      setupCostModeSwitch();
       loadData();
     });
 
@@ -1209,6 +1324,44 @@
           clearPendingDownload();
         });
       }
+      closeDataMergeDialog();
+    }
+
+    /**
+     * Настраивает переключатель режима стоимости.
+     */
+    function setupCostModeSwitch() {
+      if (!modeSwitchEl) return;
+      modeSwitchEl.addEventListener('click', (event) => {
+        const target = event.target instanceof HTMLElement ? event.target.closest('button[data-mode]') : null;
+        if (!target) return;
+        const nextMode = target.dataset.mode;
+        if (!nextMode || nextMode === state.mode) {
+          updateCostModeSwitch();
+          return;
+        }
+        if (nextMode !== 'materials' && nextMode !== 'materials_labor' && nextMode !== 'materials_labor_overhead') {
+          return;
+        }
+        state.mode = nextMode;
+        persistState();
+        updateCostModeSwitch();
+        syncOptionCards();
+        renderSummary();
+      });
+      updateCostModeSwitch();
+    }
+
+    /**
+     * Обновляет визуальное состояние переключателя режима стоимости.
+     */
+    function updateCostModeSwitch() {
+      if (!modeSwitchEl) return;
+      const buttons = modeSwitchEl.querySelectorAll('button[data-mode]');
+      buttons.forEach((button) => {
+        const pressed = button.dataset.mode === state.mode;
+        button.setAttribute('aria-pressed', String(pressed));
+      });
     }
 
     /**
@@ -1389,6 +1542,9 @@
         }
         state.dataFileHandle = handle;
         state.dataFileName = handle.name || 'data.json';
+        if (statusEl) {
+          statusEl.textContent = `Подключён файл: ${state.dataFileName}`;
+        }
         const summary = {
           categoriesAdded: 0,
           categoriesUpdated: 0,
@@ -1496,6 +1652,9 @@
         const writeResult = await writeDataFile();
         if (writeResult.success) {
           summary.writeStatus = 'saved';
+          if (statusEl) {
+            statusEl.textContent = `Сохранено в ${state.dataFileName || 'data.json'}`;
+          }
         } else if (writeResult.reason === 'no-handle') {
           summary.writeStatus = 'no-handle';
           summary.downloadReady = true;
@@ -2100,7 +2259,7 @@
     }
 
     /**
-     * Рендер фильтров: поиск, категории, теги и базовые переключатели режимов.
+     * Рендер фильтров: поиск, категории, теги и дополнительные переключатели.
      */
     function renderFilters() {
       if (!state.index) return;
@@ -2116,22 +2275,6 @@
         state.filters.search = event.target.value;
         persistState();
         applyFilters();
-      });
-
-      const modeGroup = document.createElement('div');
-      modeGroup.className = 'toggle-row';
-      modeGroup.innerHTML = `
-        <label><input type="radio" name="mode" value="materials" ${state.mode === 'materials' ? 'checked' : ''}> Материалы</label>
-        <label><input type="radio" name="mode" value="materials_labor" ${state.mode === 'materials_labor' ? 'checked' : ''}> Материалы + работы</label>
-        <label><input type="radio" name="mode" value="materials_labor_overhead" ${state.mode === 'materials_labor_overhead' ? 'checked' : ''}> Материалы + работы + накладные</label>
-      `;
-      modeGroup.addEventListener('change', (event) => {
-        if (event.target instanceof HTMLInputElement) {
-          state.mode = event.target.value;
-          persistState();
-          syncOptionCards();
-          renderSummary();
-        }
       });
 
       const roundingLabel = document.createElement('label');
@@ -2223,7 +2366,7 @@
       if (geometryCard) {
         filtersContent.append(geometryCard);
       }
-      filtersContent.append(search, modeGroup, roundingLabel, categoriesGroup, tagGroup, autoGroup);
+      filtersContent.append(search, roundingLabel, categoriesGroup, tagGroup, autoGroup);
 
       const laborToggle = laborLabel.querySelector('input');
       const overheadToggle = overheadLabel.querySelector('input');
@@ -2709,8 +2852,6 @@
         return;
       }
       const { categories, overall } = calcTotals(options, state.mode);
-      const description = document.createElement('p');
-      description.textContent = `Режим: ${modeLabel(state.mode)}${state.rounding ? ', округление до рублей' : ''}.`;
       const table = document.createElement('table');
       table.innerHTML = '<thead><tr><th>Категория</th><th>min</th><th>mid</th><th>max</th></tr></thead>';
       const tbody = document.createElement('tbody');
@@ -2734,7 +2875,22 @@
       tbody.append(totalRow);
       table.append(tbody);
       totalsContent.innerHTML = '';
-      totalsContent.append(description, table);
+      renderTotalsFooterNote();
+      totalsContent.append(table);
+    }
+
+    /**
+     * Показывает активный режим и округление над итоговой таблицей.
+     */
+    function renderTotalsFooterNote() {
+      if (!totalsContent) return;
+      const existing = totalsContent.querySelector('.totals-note');
+      if (existing) existing.remove();
+      const round = state.rounding ? 'с округлением до рублей' : 'без округления';
+      const note = document.createElement('p');
+      note.className = 'totals-note';
+      note.textContent = `Режим: ${modeLabel(state.mode)}, ${round}.`;
+      totalsContent.prepend(note);
     }
 
     /**
@@ -3207,6 +3363,7 @@
         const warn = document.createElement('div');
         warn.className = 'completeness-warning';
         warn.textContent = `Данные неполные: ${opt.completeness}`;
+        warn.title = 'Заполните недостающие значения стоимости и источников.';
         article.append(warn);
       }
 
@@ -3235,14 +3392,28 @@
         `;
       }
 
+      let quantityChanged = false;
       const quantityValue = article.querySelector('.option-quantity-value');
       if (quantityValue) {
         const label = formatOptionQuantity(opt);
         quantityValue.textContent = label;
         const base = typeof opt.quantity_for_project === 'number' ? opt.quantity_for_project : null;
         const current = effectiveQuantity(opt);
-        const changed = base != null && current != null && Math.abs(current - base) > 0.01;
-        quantityValue.classList.toggle('quantity-changed', changed);
+        quantityChanged = base != null && current != null && Math.abs(current - base) > 0.01;
+        quantityValue.classList.toggle('quantity-changed', quantityChanged);
+      }
+
+      const titleEl = article.querySelector('h3');
+      if (titleEl) {
+        let badge = article.querySelector('.option-badge-updated');
+        if (quantityChanged && !badge) {
+          badge = document.createElement('span');
+          badge.className = 'option-badge-updated';
+          badge.textContent = 'пересчитано';
+          titleEl.append(' ', badge);
+        } else if (!quantityChanged && badge instanceof HTMLElement) {
+          badge.remove();
+        }
       }
 
       const toggleBtn = article.querySelector('.option-actions button');
@@ -3858,6 +4029,7 @@
           state.geometryOverrides = overrides;
           applyGeometryOverrides();
         }
+        updateCostModeSwitch();
       } catch (error) {
         console.warn('Не удалось восстановить сохранённое состояние:', error);
       }
