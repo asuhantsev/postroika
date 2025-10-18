@@ -236,6 +236,63 @@
           "last_updated": "2024-05-24"
         }
       ]
+    },
+    {
+      "id": "module_template",
+      "name": "Пример нового модуля",
+      "options": [
+        {
+          "id": "module_template_pack",
+          "category_id": "module_template",
+          "name": "Модульная оболочка под расширение",
+          "description": "Базовый комплект панелей и соединений для быстрого расширения базовой коробки.",
+          "unit": "комплект",
+          "price_unit_basis": "1 комплект",
+          "quantity_for_project": 1,
+          "scaling": {
+            "geometry_key": "floor_area_m2",
+            "method": "linear",
+            "multiplier": 0.08,
+            "offset": 0.5,
+            "min_multiplier": 0.5,
+            "max_multiplier": 2,
+            "label": "площади пола",
+            "note": "Подходит для быстрого масштабирования — коэффициенты можно уточнять под проект."
+          },
+          "materials_total_min_rub": 185000,
+          "materials_total_mid_rub": 210000,
+          "materials_total_max_rub": 235000,
+          "labor": {
+            "model": "crew",
+            "param": "modular_team",
+            "labor_total_min_rub": 42000,
+            "labor_total_mid_rub": 48000,
+            "labor_total_max_rub": 56000
+          },
+          "subtotal_min_rub": 227000,
+          "subtotal_mid_rub": 258000,
+          "subtotal_max_rub": 291000,
+          "total_with_overhead_min_rub": 249700,
+          "total_with_overhead_mid_rub": 283800,
+          "total_with_overhead_max_rub": 319100,
+          "tags": [
+            "expansion_ready",
+            "prefab",
+            "future_module"
+          ],
+          "mutually_exclusive_group": "module_template_system",
+          "dependencies": [],
+          "default_selected": false,
+          "sources": [
+            {
+              "title": "Прайс модульных элементов",
+              "url": "https://example.com/module-pack"
+            }
+          ],
+          "completeness": "full",
+          "last_updated": "2024-05-30"
+        }
+      ]
     }
   ]
 }
